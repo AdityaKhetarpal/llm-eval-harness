@@ -1,0 +1,83 @@
+name: Generate the support-bot answers
+
+# Runs every version of the Voltkart support bot (examples/support_bot/variants.yaml) on all 44 messages
+# with free local Qwen models on the runner's CPU, then commits the answers so evalgate can replay them.
+on:
+  workflow_dispatch:
+    inputs:
+      variants:
+        description: 'JSON list of versions to run'
+        required: false
+        default: '["v1-3b", "v2-3b", "v1-1.5b", "v3-3b"]'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate
+  cancel-in-progress: false
+
+jobs:
+  answer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: ${{ fromJSON(inputs.variants) }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -q transformers accelerate
+          pip install -q -e .
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-gen-${{ matrix.variant }}
+      - name: Answer all 44 messages
+        run: python scripts/generate_support_runs.py "${{ matrix.variant }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: answers-${{ matrix.variant }}
+          path: examples/support_bot/runs/
+
+  publish:
+    needs: answer
+    if: always() && needs.answer.result != 'cancelled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: answers-*
+          path: examples/support_bot/runs
+          merge-multiple: true
+      - name: Save the baseline and rebuild the website data
+        run: |
+          pip install -q -e .
+          ls -la examples/support_bot/runs
+          mkdir -p baselines
+          evalgate run examples/support_bot/suite.yaml --label "v1-3b (live)" -q --out baselines/support-bot.json
+          python scripts/build_site_data.py
+      - name: Publish
+        run: |
+          git config user.name "Aditya Khetarpal"
+          git config user.email "80028073+AdityaKhetarpal@users.noreply.github.com"
+          git add examples/support_bot/runs baselines web/data/site.json
+          if git diff --cached --quiet; then echo "Nothing changed."; exit 0; fi
+          git commit -m "Support bot answers $(date -u +%Y-%m-%d)"
+          git stash push --include-untracked --message "not published" || true
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then echo "Published."; exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            echo "Push failed (attempt $attempt), retrying in 20 seconds..."; sleep 20
+          done
+          echo "Could not publish after 3 attempts."; exit 1

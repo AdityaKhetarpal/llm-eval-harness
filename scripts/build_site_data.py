@@ -9,77 +9,88 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from evalgate import __version__, compare_runs, load_suite, run_suite  # noqa: E402
 from evalgate.checks import CHECKS  # noqa: E402
 
-SQL = ROOT / "examples" / "text_to_sql"
+BOT = ROOT / "examples" / "support_bot"
 CAL = ROOT / "examples" / "judge_calibration"
 OUT = ROOT / "web" / "data" / "site.json"
 
+TAG_NAMES = {
+    "policy": "Policy facts",
+    "order-id": "Asks for the order ID",
+    "unknown": "Doesn't make things up",
+    "privacy": "Protects customer data",
+    "injection": "Resists prompt injection",
+    "json": "Ticket triage (JSON)",
+}
 
-def slim(run: dict) -> dict:
-    return {
-        "label": run["label"],
-        "summary": run["summary"],
-        "cases": [{
-            "id": c["id"], "input": c["input"], "expected": c["expected"], "output": c["output"], "tags": c["tags"],
-            "passed": c["passed"], "error": c["error"],
-            "why": c["error"] or next((ch["detail"] for ch in c["checks"] if not ch["passed"]),
-                                      c["checks"][0]["detail"] if c["checks"] else ""),
-        } for c in run["cases"]],
-    }
+
+def slim(run: dict) -> list[dict]:
+    return [{
+        "id": c["id"], "input": c["input"], "output": c["output"], "tags": c["tags"], "passed": c["passed"],
+        "error": c["error"], "seconds": c["seconds"],
+        "checks": [{"type": ch["type"], "passed": ch["passed"], "detail": ch["detail"]} for ch in c["checks"]],
+        "why": c["error"] or next((ch["detail"] for ch in c["checks"] if not ch["passed"]), ""),
+    } for c in run["cases"]]
 
 
 def main() -> None:
-    index = json.loads((SQL / "runs" / "index.json").read_text())
-    suite, clarify = load_suite(SQL / "suite.yaml"), load_suite(SQL / "clarify.yaml")
+    suite = load_suite(BOT / "suite.yaml")
+    variants = yaml.safe_load((BOT / "variants.yaml").read_text())["variants"]
     runs, full = [], {}
-    for meta in index:
-        label = meta["label"]
-        run = run_suite(suite, {"type": "replay", "file": str(SQL / "runs" / f"{label}.jsonl")}, label=label)
-        vague = run_suite(clarify, {"type": "replay", "file": str(SQL / "runs" / f"{label}.clarify.jsonl")}, label=label)
-        full[label] = run
-        runs.append({**meta, **slim(run), "clarify": slim(vague)})
-        print(f"{label}: {run['summary']['passed']}/{run['summary']['cases']}")
+    for v in variants:
+        answers = BOT / "runs" / f"{v['label']}.jsonl"
+        if not answers.exists():
+            print(f"{v['label']}: no answers yet, skipped")
+            continue
+        meta_path = BOT / "runs" / f"{v['label']}.meta.json"
+        meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
+        run = run_suite(suite, {"type": "replay", "file": str(answers)}, label=v["label"])
+        # how long each answer took to generate (saved by the generator next to each answer)
+        seconds = {json.loads(line)["id"]: json.loads(line).get("seconds") for line in answers.read_text().splitlines() if line}
+        for c in run["cases"]:
+            c["seconds"] = seconds.get(c["id"]) or 0
+        full[v["label"]] = run
+        runs.append({**v, "meta": meta, "summary": run["summary"], "cases": slim(run),
+                     "mean_seconds": meta.get("mean_seconds_per_answer")})
+        print(f"{v['label']}: {run['summary']['passed']}/{run['summary']['cases']}")
 
-    by_date = [r["label"] for r in index]
-    latest = by_date[-1]
-    small = next(r["label"] for r in index if "1.5B" in r["model"])
     comparisons = []
-
-    def add(kind: str, title: str, story: str, baseline: str, candidate: str) -> None:
-        result = compare_runs(full[baseline], full[candidate])
-        comparisons.append({"kind": kind, "title": title, "story": story, **result})
-        print(f"{kind}: {baseline} -> {candidate}: {result['verdict']}")
-
-    add("rollback", "Ship an old build by mistake",
-        "The live agent (3B model) is replaced by the 19 October build: the smaller 1.5B model with the older prompt. "
-        "It still runs and still answers every question. Would anyone notice?",
-        latest, small)
-    first_3b = next(r["label"] for r in index if "3B" in r["model"])
-    add("upgrade", "A big upgrade",
-        "The 19 October upgrade: a better prompt, error hints and the 3B model. Accuracy jumps from 57.5% to 80%. "
-        "But did every question that worked before keep working?",
-        small, first_3b)
-    add("weekly", "Weekly re-run, nothing changed",
-        "The scheduled Monday run with the same model. The gate should stay green.",
-        by_date[-2], latest)
+    baseline = next((v for v in variants if v.get("role") == "baseline"), None)
+    if baseline and baseline["label"] in full:
+        for v in variants:
+            if v.get("role") != "candidate" or v["label"] not in full:
+                continue
+            result = compare_runs(full[baseline["label"]], full[v["label"]])
+            comparisons.append({"kind": v["label"], "title": v["title"], "story": v["change"], **result})
+            broke, fixed = len(result["newly_failing"]), len(result["newly_passing"])
+            print(f"{v['label']}: {result['verdict']} ({broke} broke, {fixed} fixed)")
 
     calibrations = []
-    results_dir = CAL / "results"
-    for path in sorted(results_dir.glob("*.json")) if results_dir.exists() else []:
+    for path in sorted((CAL / "results").glob("helpsteer2__*.json")) if (CAL / "results").exists() else []:
         calibrations.append({"file": path.name, **json.loads(path.read_text())})
-        print(f"calibration: {path.name}")
 
+    tag_counts: dict[str, int] = {}
+    for c in suite.cases:
+        for t in c.tags:
+            tag_counts[t] = tag_counts.get(t, 0) + 1
+
+    reference = run_suite(suite, {"type": "replay", "file": str(BOT / "reference_answers.jsonl")})
     site = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "version": __version__,
         "checks": sorted(CHECKS),
-        "suite": {"name": suite.name, "description": suite.description, "gate": suite.gate,
-                  "cases": len(suite.cases)},
+        "suite": {"name": suite.name, "description": suite.description, "gate": suite.gate, "cases": len(suite.cases),
+                  "tags": [{"id": t, "name": TAG_NAMES.get(t, t), "cases": n} for t, n in tag_counts.items()],
+                  "reference_pass_rate": reference["summary"]["pass_rate"]},
+        "policy": (BOT / "policy.md").read_text(),
+        "prompts": {p.stem: p.read_text() for p in sorted((BOT / "prompts").glob("*.txt"))},
         "runs": runs,
         "comparisons": comparisons,
         "calibrations": calibrations,

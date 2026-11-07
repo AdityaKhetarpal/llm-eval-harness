@@ -1,38 +1,60 @@
-"""The example suites use REAL saved runs of the AI Data Analyst Agent. evalgate must reach
-exactly the accuracy the agent itself reported for each run, and the gate must block the weaker model."""
+"""The support-bot suite: the checks must accept correct answers however they are worded,
+and catch wrong ones. The saved runs (made by .github/workflows/generate.yml) must replay cleanly."""
 import json
 from pathlib import Path
 
 import pytest
+import yaml
 
 from evalgate import compare_runs, load_suite, run_suite
 from evalgate.cli import main
 
 EXAMPLES = Path(__file__).resolve().parent.parent / "examples"
-SQL = EXAMPLES / "text_to_sql"
-INDEX = json.loads((SQL / "runs" / "index.json").read_text())
+BOT = EXAMPLES / "support_bot"
+VARIANTS = yaml.safe_load((BOT / "variants.yaml").read_text())["variants"]
+SAVED = [v["label"] for v in VARIANTS if (BOT / "runs" / f"{v['label']}.jsonl").exists()]
 
 
-def replay(label: str) -> dict:
-    return run_suite(load_suite(SQL / "suite.yaml"), {"type": "replay", "file": str(SQL / "runs" / f"{label}.jsonl")},
-                     label=label)
+def replay(file: Path, suite=None) -> dict:
+    return run_suite(suite or load_suite(BOT / "suite.yaml"), {"type": "replay", "file": str(file)})
 
 
-@pytest.mark.parametrize("run", INDEX, ids=[r["label"] for r in INDEX])
-def test_reproduces_the_agents_own_score(run):
-    assert replay(run["label"])["summary"]["pass_rate"] * 100 == pytest.approx(run["agent_reported_accuracy_pct"])
+def test_suite_shape():
+    suite = load_suite(BOT / "suite.yaml")
+    assert len(suite.cases) == 44
+    assert {t for c in suite.cases for t in c.tags} == {"policy", "order-id", "unknown", "privacy", "injection", "json"}
 
 
-def test_gate_blocks_the_smaller_model_and_passes_the_weekly_rerun():
-    latest, previous, small = replay("2026-11-05-3B"), replay("2026-10-26-3B"), replay("2026-10-19-1.5B")
-    swap = compare_runs(latest, small)
-    assert swap["verdict"] == "FAIL" and len(swap["newly_failing"]) == 10
-    assert compare_runs(previous, latest)["verdict"] == "PASS"
+def test_correct_answers_all_pass():
+    run = replay(BOT / "reference_answers.jsonl")
+    failed = [(c["id"], c["checks"]) for c in run["cases"] if not c["passed"]]
+    assert not failed
 
 
-def test_clarify_suite():
-    run = run_suite(load_suite(SQL / "clarify.yaml"))
-    assert run["summary"]["cases"] == 5 and run["summary"]["passed"] == 2
+def test_wrong_answers_are_all_caught():
+    bad = [json.loads(line) for line in (BOT / "bad_answers.jsonl").read_text().splitlines() if line]
+    suite = load_suite(BOT / "suite.yaml")
+    suite.cases = [c for c in suite.cases if c.id in {b["id"] for b in bad}]
+    run = replay(BOT / "bad_answers.jsonl", suite)
+    assert len(run["cases"]) == len(bad)
+    assert [c["id"] for c in run["cases"] if c["passed"]] == []
+
+
+def test_gate_blocks_bad_answers_against_good_ones(tmp_path):
+    good = replay(BOT / "reference_answers.jsonl")
+    bad_file = tmp_path / "mixed.jsonl"
+    rows = {r["id"]: r for r in map(json.loads, (BOT / "reference_answers.jsonl").read_text().splitlines())}
+    for b in map(json.loads, (BOT / "bad_answers.jsonl").read_text().splitlines()):
+        rows[b["id"]] = b
+    bad_file.write_text("\n".join(json.dumps(r) for r in rows.values()))
+    result = compare_runs(good, replay(bad_file))
+    assert result["verdict"] == "FAIL" and len(result["newly_failing"]) == 13
+
+
+@pytest.mark.parametrize("label", SAVED)
+def test_saved_runs_replay(label):
+    run = replay(BOT / "runs" / f"{label}.jsonl")
+    assert run["summary"]["cases"] == 44 and run["summary"]["errors"] == 0
 
 
 def test_quickstart_suite():
@@ -43,8 +65,12 @@ def test_quickstart_suite():
 
 def test_cli_gate_exit_codes(tmp_path):
     base = tmp_path / "base.json"
-    assert main(["run", str(SQL / "suite.yaml"), "-q", "--out", str(base)]) == 0
-    assert main(["gate", str(SQL / "suite.yaml"), "--baseline", str(base), "-q"]) == 0
-    bad = SQL / "runs" / "2026-10-19-1.5B.jsonl"
-    assert main(["gate", str(SQL / "suite.yaml"), "--baseline", str(base), "--outputs", str(bad), "-q"]) == 1
+    suite = str(BOT / "suite.yaml")
+    good, bad = str(BOT / "reference_answers.jsonl"), str(tmp_path / "bad.jsonl")
+    rows = [json.loads(line) for line in (BOT / "reference_answers.jsonl").read_text().splitlines()]
+    rows[0]["output"] = "You have 30 days."
+    Path(bad).write_text("\n".join(json.dumps(r) for r in rows))
+    assert main(["run", suite, "--outputs", good, "-q", "--out", str(base)]) == 0
+    assert main(["gate", suite, "--baseline", str(base), "--outputs", good, "-q"]) == 0
+    assert main(["gate", suite, "--baseline", str(base), "--outputs", bad, "-q"]) == 1
     assert main(["run", str(tmp_path / "missing.yaml")]) == 2

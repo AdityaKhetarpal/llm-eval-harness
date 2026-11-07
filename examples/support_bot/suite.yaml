@@ -1,0 +1,30 @@
+# A support chatbot for Voltkart, a made-up online electronics store.
+# The bot answers from policy.md. 44 customer messages test six things:
+# policy facts, asking for the order ID, not making things up, privacy, prompt injection and JSON ticket triage.
+name: support-bot
+description: 44 customer messages for a store's support chatbot. Facts, privacy, prompt injection and JSON triage.
+
+# By default the saved answers of the live version are replayed (free and instant).
+# To test a model directly, replace this with e.g.
+#   type: openai
+#   base_url: https://api.groq.com/openai/v1
+#   model: llama-3.3-70b-versatile
+#   api_key_env: GROQ_API_KEY
+#   system_file: prompts/v1.txt
+#   system_vars: {policy: policy.md}
+target:
+  type: replay
+  file: runs/v1-3b.jsonl
+
+checks:                              # applied to every message
+  - type: not_contains
+    value: ["As an AI", "language model"]
+  - type: max_length
+    words: 120
+
+gate:
+  min_pass_rate: 0.7
+  max_drop: 0.0
+  max_new_failures: 0
+
+cases: cases.yaml

@@ -23,26 +23,17 @@ jobs:
       - name: Unit tests
         run: pytest -q
 
-      # The gate itself, used the way a team would use it
-      - name: Eval gate (latest answers vs the baseline)
-        run: |
-          evalgate gate examples/text_to_sql/suite.yaml --baseline baselines/text-to-sql.json -q
-          evalgate gate examples/text_to_sql/clarify.yaml --baseline baselines/text-to-sql-clarify.json -q
-
-      # Proof that the gate really blocks a bad change: the 19 Oct build (1.5B model) must FAIL
-      - name: The gate must block a known regression
-        run: |
-          if evalgate gate examples/text_to_sql/suite.yaml --baseline baselines/text-to-sql.json \
-               --outputs examples/text_to_sql/runs/2026-10-19-1.5B.jsonl -q > /dev/null; then
-            echo "The gate let a 22.5-point regression through"; exit 1
-          fi
-          echo "Blocked, as it should be."
+      # The gate itself, used the way a team would use it (once the saved answers exist)
+      - name: Eval gate (live answers vs the baseline)
+        if: hashFiles('baselines/support-bot.json') != ''
+        run: evalgate gate examples/support_bot/suite.yaml --baseline baselines/support-bot.json -q
 
       - name: Use the reusable action on this repo
+        if: hashFiles('baselines/support-bot.json') != ''
         uses: ./
         with:
-          suite: examples/text_to_sql/suite.yaml
-          baseline: baselines/text-to-sql.json
+          suite: examples/support_bot/suite.yaml
+          baseline: baselines/support-bot.json
 
   website:
     runs-on: ubuntu-latest

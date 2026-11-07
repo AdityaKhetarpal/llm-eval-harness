@@ -11,6 +11,8 @@ a way to get the app's answer for each case:
     type: python     call a Python function `module:function(input, case) -> str`.
                      Example: function: "my_app.chat:answer"   (path: "." adds the suite folder to sys.path)
     type: openai     (or anthropic / local) a plain model + system prompt: the case input is the user message.
+                     The prompt can come from a file: system_file: prompts/v1.txt, with system_vars: {policy: policy.md}
+                     filling {policy} in it.
 
 A target returns a function: case -> answer text.
 """
@@ -45,6 +47,20 @@ def _load_replay(path: Path) -> dict[str, str]:
 
 class MissingAnswer(LookupError):
     pass
+
+
+def build_system_prompt(suite: Suite, config: dict) -> str | None:
+    """The system prompt for a model target: `system` text, or `system_file`.
+    `system_vars` fills {placeholders} with the contents of other files, e.g. {policy: policy.md}."""
+    if config.get("system_file"):
+        text = suite.resolve(config["system_file"]).read_text(encoding="utf-8")
+    else:
+        text = config.get("system")
+    if text is None:
+        return None
+    for name, file in (config.get("system_vars") or {}).items():
+        text = text.replace("{" + name + "}", suite.resolve(file).read_text(encoding="utf-8").strip())
+    return text
 
 
 def make_target(suite: Suite, override: dict | None = None) -> tuple[Answer, str]:
@@ -103,7 +119,7 @@ def make_target(suite: Suite, override: dict | None = None) -> tuple[Answer, str
 
     if kind in ("openai", "anthropic", "local", "fake"):
         settings = {**config, "provider": config.get("provider", kind)}
-        system = config.get("system")
+        system = build_system_prompt(suite, config)
 
         def ask(case: Case) -> str:
             messages = [{"role": "system", "content": system}] if system else []

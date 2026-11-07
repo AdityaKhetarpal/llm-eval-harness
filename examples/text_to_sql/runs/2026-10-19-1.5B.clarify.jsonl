@@ -1,5 +1,0 @@
-{"id": "v1", "output": "What criteria should be used to determine the best products? For example, based on revenue, popularity, or some other metric?"}
-{"id": "v2", "output": "I couldn't write a working query after 3 tries. Last error: no such column: customer_id"}
-{"id": "v3", "output": "SELECT\n  city,\n  COUNT(*) AS num_customers\nFROM customers\nGROUP BY\n  city\nORDER BY\n  num_customers DESC\nLIMIT 200"}
-{"id": "v4", "output": "What kind of growth are you interested in? Is it monthly, yearly, or overall?"}
-{"id": "v5", "output": "SELECT\n  SUM(line_revenue) AS total_sales_inr\nFROM (\n  SELECT\n    oi.quantity * oi.unit_price_inr * (\n      1 - oi.discount_pct / 100.0\n    ) AS line_revenue\n  FROM order_items AS oi\n  JOIN orders AS o\n    ON o.order_id = oi.order_id\n  WHERE\n    o.status IN ('delivered', 'shipped')\n) AS subquery\nLIMIT 200"}

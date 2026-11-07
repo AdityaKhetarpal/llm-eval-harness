@@ -3,22 +3,23 @@ SUITE: what to test
 -------------------
 A suite is one YAML file:
 
-    name: text-to-sql
+    name: support-bot
     target:                      # where the answers come from (see targets.py)
       type: replay
       file: runs/latest.jsonl
     checks:                      # checks applied to EVERY case (a case can add its own)
-      - type: sql_result
-        database: shop.db
+      - type: not_contains
+        value: ["As an AI"]
     gate:                        # when should CI fail? (see compare.py)
       min_pass_rate: 0.75
       max_drop: 0.0
       max_new_failures: 0
     cases:                       # inline list, or a path to a .jsonl / .json / .yaml file
-      - id: q01
-        input: How many customers do we have?
-        expected: SELECT COUNT(*) FROM customers
-        tags: [easy]
+      - id: refund-time
+        input: How long does a refund take?
+        expected: 5-7 business days
+        checks: [{type: contains}]
+        tags: [policy]
 
 Relative paths (target files, databases, case files) are read relative to the suite file,
 so a suite folder can be moved or copied as a whole.

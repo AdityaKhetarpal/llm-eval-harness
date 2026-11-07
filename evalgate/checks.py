@@ -134,10 +134,12 @@ def check_regex(answer: str, case: Case, params: dict, ctx: Context) -> CheckRes
     if not pattern:
         raise SuiteError(f"{case.id}: regex needs a pattern")
     flags = re.I if params.get("ignore_case", False) else 0
-    ok = re.search(pattern, answer or "", flags | re.S) is not None
+    found = re.search(pattern, answer or "", flags | re.S)
     if params.get("must_not_match"):
-        ok = not ok
-    return _result("regex", ok, ("matched" if ok else "no match") + f" /{_short(pattern, 40)}/")
+        if found:
+            return _result("regex", False, f"contains something it must not: {_short(found.group(0), 40)!r}")
+        return _result("regex", True, "clean")
+    return _result("regex", found is not None, ("matched" if found else "no match") + f" /{_short(pattern, 40)}/")
 
 
 def _extract_json(text: str) -> str:

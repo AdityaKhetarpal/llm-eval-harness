@@ -95,7 +95,7 @@ jobs:
           if [ "$ENGINE" = "api" ]; then
             extra+=(--provider openai --base-url "${LLM_BASE_URL:-https://api.groq.com/openai/v1}" --api-key-env LLM_API_KEY)
           fi
-          for spec in helpsteer2 sql_judge; do
+          for spec in helpsteer2; do
             evalgate calibrate "examples/judge_calibration/$spec.yaml" --model "$MODEL" -q "${extra[@]}" \
               --cache "calibration/${spec}__${slug}.grades.jsonl" \
               --out "calibration/${spec}__${slug}.json"

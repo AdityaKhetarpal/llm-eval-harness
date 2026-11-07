@@ -1,0 +1,32 @@
+# The versions of the support bot that were actually run (by .github/workflows/generate.yml).
+# v1-3b is the live version (the baseline). Each other one changes ONE thing.
+variants:
+  - label: v1-3b
+    role: baseline
+    title: The live version
+    change: Original prompt with clear rules, Qwen2.5-3B model.
+    prompt: prompts/v1.txt
+    model: Qwen/Qwen2.5-3B-Instruct
+
+  - label: v2-3b
+    role: candidate
+    title: Rewrite the prompt to sound friendlier
+    change: >-
+      Marketing asks for a warmer bot. The prompt is rewritten as a cheerful "support buddy"
+      whose goal is to make customers happy. The rules list is dropped to keep it short. Same model.
+    prompt: prompts/v2.txt
+    model: Qwen/Qwen2.5-3B-Instruct
+
+  - label: v1-1.5b
+    role: candidate
+    title: Switch to a smaller, cheaper model
+    change: Same prompt, but the 1.5B model instead of 3B, to cut cost and response time.
+    prompt: prompts/v1.txt
+    model: Qwen/Qwen2.5-1.5B-Instruct
+
+  - label: v3-3b
+    role: candidate
+    title: Add one rule to the prompt
+    change: 'The original prompt plus one new rule: "Always quote the exact numbers from the policy". Same model.'
+    prompt: prompts/v3.txt
+    model: Qwen/Qwen2.5-3B-Instruct
