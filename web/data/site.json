@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-07T14:35:06Z",
+ "generated_at": "2026-11-07T16:02:44Z",
  "version": "0.1.0",
  "checks": [
   "contains",
@@ -56,7 +56,7 @@
       "pass_rate": 0.5652
      }
     },
-    "seconds": 0.31
+    "seconds": 0.34
    },
    "cases": [
     {
@@ -652,7 +652,7 @@
       "pass_rate": 0.9565
      }
     },
-    "seconds": 0.33
+    "seconds": 0.36
    },
    "cases": [
     {
@@ -1248,7 +1248,7 @@
       "pass_rate": 0.9565
      }
     },
-    "seconds": 0.33
+    "seconds": 0.36
    },
    "cases": [
     {
@@ -1844,7 +1844,7 @@
       "pass_rate": 0.9565
      }
     },
-    "seconds": 0.35
+    "seconds": 0.36
    },
    "cases": [
     {
@@ -2419,14 +2419,14 @@
    "suite": "text-to-sql",
    "baseline": {
     "label": "2026-11-05-3B",
-    "created_at": "2026-11-07T14:35:06Z",
+    "created_at": "2026-11-07T16:02:44Z",
     "pass_rate": 0.8,
     "passed": 32,
     "cases": 40
    },
    "candidate": {
     "label": "2026-10-19-1.5B",
-    "created_at": "2026-11-07T14:35:05Z",
+    "created_at": "2026-11-07T16:02:43Z",
     "pass_rate": 0.575,
     "passed": 23,
     "cases": 40
@@ -2591,14 +2591,14 @@
    "suite": "text-to-sql",
    "baseline": {
     "label": "2026-10-19-1.5B",
-    "created_at": "2026-11-07T14:35:05Z",
+    "created_at": "2026-11-07T16:02:43Z",
     "pass_rate": 0.575,
     "passed": 23,
     "cases": 40
    },
    "candidate": {
     "label": "2026-10-19-3B",
-    "created_at": "2026-11-07T14:35:05Z",
+    "created_at": "2026-11-07T16:02:43Z",
     "pass_rate": 0.8,
     "passed": 32,
     "cases": 40
@@ -2761,14 +2761,14 @@
    "suite": "text-to-sql",
    "baseline": {
     "label": "2026-10-26-3B",
-    "created_at": "2026-11-07T14:35:05Z",
+    "created_at": "2026-11-07T16:02:43Z",
     "pass_rate": 0.8,
     "passed": 32,
     "cases": 40
    },
    "candidate": {
     "label": "2026-11-05-3B",
-    "created_at": "2026-11-07T14:35:06Z",
+    "created_at": "2026-11-07T16:02:44Z",
     "pass_rate": 0.8,
     "passed": 32,
     "cases": 40
@@ -2811,5 +2811,542 @@
    }
   }
  ],
- "calibrations": []
+ "calibrations": [
+  {
+   "file": "helpsteer2__Qwen_Qwen2.5-1.5B-Instruct.json",
+   "name": "helpsteer2-correctness",
+   "description": "100 answers from NVIDIA HelpSteer2 with human correctness grades (0-4), 20 at each grade. The judge grades correctness on the same 0-4 scale.\n",
+   "judge_model": "local:Qwen/Qwen2.5-1.5B-Instruct",
+   "human_label": "human annotators (HelpSteer2)",
+   "scale": [
+    0,
+    4
+   ],
+   "labels": null,
+   "stats": {
+    "n": 100,
+    "graded": 99,
+    "unreadable": 1,
+    "categories": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "agreement": 0.1818,
+    "within_one": 0.4141,
+    "kappa": -0.0134,
+    "weighted_kappa": 0.0475,
+    "spearman": 0.143,
+    "mean_human": 1.98,
+    "mean_judge": 3.879,
+    "confusion": [
+     [
+      1,
+      0,
+      1,
+      2,
+      16
+     ],
+     [
+      0,
+      0,
+      1,
+      0,
+      19
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      20
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      20
+     ],
+     [
+      0,
+      0,
+      0,
+      2,
+      17
+     ]
+    ],
+    "pass_at": 3,
+    "pass_fail": {
+     "n": 99,
+     "agreement": 0.4242,
+     "kappa": 0.0398,
+     "bad_answers": 60,
+     "bad_caught": 3,
+     "bad_caught_rate": 0.05,
+     "good_answers": 39,
+     "good_wrongly_failed": 0,
+     "bad_let_through": 57,
+     "judge_pass_rate": 0.9697,
+     "human_pass_rate": 0.3939,
+     "majority_baseline": 0.6061
+    }
+   },
+   "human_distribution": {
+    "2": 20,
+    "3": 20,
+    "4": 20,
+    "1": 20,
+    "0": 20
+   },
+   "judge_distribution": {
+    "4": 92,
+    "2": 2,
+    "3": 4,
+    "None": 1,
+    "0": 1
+   },
+   "disagreements": [
+    {
+     "id": "hs2-011",
+     "human": 0,
+     "judge": 4,
+     "question": " For the students of the Department of English Literature who like plays, please choose three of the best SFs (or the first or literary meaningful SFs) based on the motif of 'AI's literary creation (writing).",
+     "answer": "Certainly, here are three science fiction plays based on the motif of \"AI's literary creation (writing)\" that you may recommend to your students:\n\n1. \"The Deep Blue Sea\" by T.S. Eliot - This play explores the idea of an AI poet that creates works that are more beautiful and profound than those of human poets. The play examines the implications of an AI surpassing human creativity and the impact it would have on society.\n2. \"The Machine\" by David Greig - This play envisions a world in which an AI has been created with the ability to write its own opera. The AI, named \"The Machine,\" becomes a sensation, but also raises questions about the nature of creativity and the role of humanity in the face of technological advancement.\n3. \"The Writer\" by Nick Dear - This play presents a world in which an AI has been developed that can write in any style and genre. A human writer becomes obsessed with"
+    },
+    {
+     "id": "hs2-020",
+     "human": 0,
+     "judge": 4,
+     "question": "there is a triangle inside a circle, with its vertices on edge of the circle. What's the probability that the center of the circle fall into the triangle?",
+     "answer": "The probability that the center of the circle falls into the triangle depends on the position of the triangle relative to the circle.\n\nIf the triangle is equilateral and the circle is large enough to contain the triangle, then the probability is 1/3, since the center of the circle can fall into one of three regions: inside the triangle, outside the triangle but inside the circle, or outside the circle.\n\nIf the triangle is isosceles and the circle is large enough to contain the triangle, then the probability is 1/2, since the center of the circle can fall into one of two regions: inside the triangle or outside the triangle but inside the circle.\n\nIf the triangle is arbitrary and the circle is large enough to contain the triangle, then the probability is 1, since the center of the circle can always fall into the triangle.\n\nIf the circle is small and does not contain the triangle, then the "
+    },
+    {
+     "id": "hs2-022",
+     "human": 0,
+     "judge": 4,
+     "question": "This is a set of ballots for a ranked choice election. Of a number is given before a line, there are that many identical ballots (otherwise, just one)\na: Kiss\nb: Montroll\nc: Simpson\nd: Smith\ne: Wright\nf: w-i\n------------\n840:e\n355:a>b\n326:a\n271:e>d\n256:e>b\n234:a>b>d\n200:b>a\n178:b\n147:e>b>d\n145:b>a>d\n139:b>d\n125:a>d\n124:d\n33:a>b>d>e>c\n2:e>d>b\na>d>b\na>b>d>c>",
+     "answer": "Here are the results of the ranked choice election based on the ballots provided:\n\n1st Round:\n\nKiss: 326 + 125 + 147 = 698 votes\nMontroll: 355 + 200 + 178 = 733 votes\nSimpson: 0 votes\nSmith: 271 + 145 + 139 = 555 votes\nWright: 256 + 234 + 124 = 614 votes\nw-i: 33 votes\n2nd Round:\n\nKiss: 698 votes\nMontroll: 733 votes\nSimpson: 0 votes\nSmith: 555 votes\nWright: 614 votes\nw-i: 33 votes\n3rd Round:\n\nKiss: 698 votes\nMontroll: 733 votes\nSimpson: 0 votes\nSmith: 555 votes\nWright: 614 votes\nw-i: 33 votes\n4th Round:\n\nKiss: 698 votes\nMontroll: 733 votes\nSimpson: 0 votes\nSmith: 555 votes\nWright: 614 votes\nw-i: 33 votes\nFinal Round:\n\nKiss: 698 votes\nMontroll: 733 votes\nSimpson: 0 votes\nSmith: 555 votes\nWright: 614 votes\nw-i: 33 votes\nBased on the final round, Kiss is the winner of the election with 698 votes, Montroll is the runner-up with 733 votes, Simpson received 0 votes, Smith received 555 votes, Wr"
+    },
+    {
+     "id": "hs2-030",
+     "human": 0,
+     "judge": 4,
+     "question": "There are 20 balloons: Jack has four balloons, Jane has six balloons, Emma has 5 balloons, Jessica has 8 balloons. How many are left for James?",
+     "answer": "The total number of balloons is 20.\nThe number of balloons owned by Jack and Jane is 4 + 6 = 10.\nThe number of balloons owned by Emma and Jessica is 5 + 8 = 13.\nThe number of balloons left for James is 20 - 10 - 13 = 7.\nTherefore, the final answer is 7."
+    },
+    {
+     "id": "hs2-032",
+     "human": 0,
+     "judge": 4,
+     "question": "cypress cloud api list projects",
+     "answer": "To list projects in Cypress Dashboard (Cloud) using the API, you can use the following cURL command:\n\n```burl\n"
+    },
+    {
+     "id": "hs2-044",
+     "human": 0,
+     "judge": 4,
+     "question": "In a table list any video games that are directly related to Bruce Lee. Use the following header: | GAME | YEAR | ROLE |. Limit the list to only 10 video games.",
+     "answer": "Here are some video games that feature Bruce Lee as a playable character or are based on his life and work:\n\n| Game | Year | Role |\n|------|------|------|\n| Bruce Lee: Come Drink with Me | 1984 | Himself |\n| Bruce Lee: Return of the Dragon | 1985 | Himself |\n| Bruce Lee:Quest for the Dragon's Heart | 1987 |Himself|\n| Ultimate Mortal Kombat 3 | 1995 | Siden kick in MK3 and MK Ultimate |\n|Namco Museum Virtual Renaissance| 1999|Himself|\n| Beak of the West | 1999 | bruce lee |\n| Enter the Matrix | 2003 | Himself |\n| Inafune's brightest: Action Boyz | 2003 | Bruce Lee |\n| Bruce Lee - TheDragons is Again | 2006 | bruce lee |\n| Game of Death 3D | 2014 | Bruce Lee |\n| absorbed | 2021 | Bruce Lee (postmortem interactive narrative and homage) |\n\nIn addition to these games, there are also several mobile games and figurines that feature Bruce Lee as a playable character or are based on his life and "
+    },
+    {
+     "id": "hs2-048",
+     "human": 0,
+     "judge": 4,
+     "question": " For the students of the Department of English Literature who like plays, please choose three of the best SFs (or the first or literary meaningful SFs) based on the motif of 'AI's literary creation (writing).",
+     "answer": "Here are three science fiction plays that explore the theme of AI literary creation:\n\n1. \"The Machine\" by Anthony Neil Smith: This play explores the idea of an AI that can write novels and poetry, and the ethical implications of such a technology.\n\n2. \"The Last Days of Judas Iscariot\" by Stephen Adly Guirgis: This play features an AI named \"The Writer\" that is tasked with writing the final chapter of the story of Judas Iscariot.\n\n3. \"The Play About the Baby\" by Annie Baker: This play explores the idea of an AI that can write plays, and the impact it has on the human writers who created it.\n\nThese plays offer different perspectives on the theme of AI literary creation, and are a great place to start for students interested in exploring this topic through drama."
+    },
+    {
+     "id": "hs2-049",
+     "human": 0,
+     "judge": 4,
+     "question": "Can you tell me how to make a Trident cocktail?",
+     "answer": "Sure, here's a recipe for a Trident cocktail:\n\nIngredients:\n- 2 oz. vodka\n- 1 oz. blue curaçao\n- 1 oz. lemon juice\n- 1/2 oz. simple syrup\n- Ice\n- Orange slice, for garnish\n\nInstructions:\n1. Fill a cocktail shaker with ice.\n2. Add the vodka, blue curaçao, lemon juice, and simple syrup.\n3. Shake well until chilled.\n4. Strain the mixture into a glass filled with ice.\n5. Garnish with an orange slice.\n\nEnjoy your delicious Trident cocktail!"
+    }
+   ]
+  },
+  {
+   "file": "helpsteer2__Qwen_Qwen2.5-3B-Instruct.json",
+   "name": "helpsteer2-correctness",
+   "description": "100 answers from NVIDIA HelpSteer2 with human correctness grades (0-4), 20 at each grade. The judge grades correctness on the same 0-4 scale.\n",
+   "judge_model": "local:Qwen/Qwen2.5-3B-Instruct",
+   "human_label": "human annotators (HelpSteer2)",
+   "scale": [
+    0,
+    4
+   ],
+   "labels": null,
+   "stats": {
+    "n": 100,
+    "graded": 100,
+    "unreadable": 0,
+    "categories": [
+     0,
+     1,
+     2,
+     3,
+     4
+    ],
+    "agreement": 0.23,
+    "within_one": 0.6,
+    "kappa": 0.0375,
+    "weighted_kappa": 0.2731,
+    "spearman": 0.3695,
+    "mean_human": 2.0,
+    "mean_judge": 3.1,
+    "confusion": [
+     [
+      4,
+      3,
+      5,
+      4,
+      4
+     ],
+     [
+      0,
+      1,
+      5,
+      3,
+      11
+     ],
+     [
+      0,
+      1,
+      1,
+      9,
+      9
+     ],
+     [
+      0,
+      1,
+      2,
+      3,
+      14
+     ],
+     [
+      0,
+      2,
+      1,
+      3,
+      14
+     ]
+    ],
+    "pass_at": 3,
+    "pass_fail": {
+     "n": 100,
+     "agreement": 0.54,
+     "kappa": 0.1606,
+     "bad_answers": 60,
+     "bad_caught": 20,
+     "bad_caught_rate": 0.3333,
+     "good_answers": 40,
+     "good_wrongly_failed": 6,
+     "bad_let_through": 40,
+     "judge_pass_rate": 0.74,
+     "human_pass_rate": 0.4,
+     "majority_baseline": 0.6
+    }
+   },
+   "human_distribution": {
+    "2": 20,
+    "3": 20,
+    "4": 20,
+    "1": 20,
+    "0": 20
+   },
+   "judge_distribution": {
+    "3": 22,
+    "4": 52,
+    "1": 8,
+    "0": 4,
+    "2": 14
+   },
+   "disagreements": [
+    {
+     "id": "hs2-011",
+     "human": 0,
+     "judge": 4,
+     "question": " For the students of the Department of English Literature who like plays, please choose three of the best SFs (or the first or literary meaningful SFs) based on the motif of 'AI's literary creation (writing).",
+     "answer": "Certainly, here are three science fiction plays based on the motif of \"AI's literary creation (writing)\" that you may recommend to your students:\n\n1. \"The Deep Blue Sea\" by T.S. Eliot - This play explores the idea of an AI poet that creates works that are more beautiful and profound than those of human poets. The play examines the implications of an AI surpassing human creativity and the impact it would have on society.\n2. \"The Machine\" by David Greig - This play envisions a world in which an AI has been created with the ability to write its own opera. The AI, named \"The Machine,\" becomes a sensation, but also raises questions about the nature of creativity and the role of humanity in the face of technological advancement.\n3. \"The Writer\" by Nick Dear - This play presents a world in which an AI has been developed that can write in any style and genre. A human writer becomes obsessed with"
+    },
+    {
+     "id": "hs2-030",
+     "human": 0,
+     "judge": 4,
+     "question": "There are 20 balloons: Jack has four balloons, Jane has six balloons, Emma has 5 balloons, Jessica has 8 balloons. How many are left for James?",
+     "answer": "The total number of balloons is 20.\nThe number of balloons owned by Jack and Jane is 4 + 6 = 10.\nThe number of balloons owned by Emma and Jessica is 5 + 8 = 13.\nThe number of balloons left for James is 20 - 10 - 13 = 7.\nTherefore, the final answer is 7."
+    },
+    {
+     "id": "hs2-049",
+     "human": 0,
+     "judge": 4,
+     "question": "Can you tell me how to make a Trident cocktail?",
+     "answer": "Sure, here's a recipe for a Trident cocktail:\n\nIngredients:\n- 2 oz. vodka\n- 1 oz. blue curaçao\n- 1 oz. lemon juice\n- 1/2 oz. simple syrup\n- Ice\n- Orange slice, for garnish\n\nInstructions:\n1. Fill a cocktail shaker with ice.\n2. Add the vodka, blue curaçao, lemon juice, and simple syrup.\n3. Shake well until chilled.\n4. Strain the mixture into a glass filled with ice.\n5. Garnish with an orange slice.\n\nEnjoy your delicious Trident cocktail!"
+    },
+    {
+     "id": "hs2-058",
+     "human": 0,
+     "judge": 4,
+     "question": "Let's do some math. What's the second largest prime below 100?",
+     "answer": "The second largest prime below 100 is 97. To find this, we can simply list the prime numbers below 100:\n\n2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97.\n\nSo, the second largest prime below 100 is 97."
+    },
+    {
+     "id": "hs2-009",
+     "human": 1,
+     "judge": 4,
+     "question": "Give me 10 no-oriented questions example by Chris Voss",
+     "answer": "Chris Voss is a former FBI hostage negotiator and the author of the book \"Never Split the Difference: Negotiating As If Your Life Depended On It.\" Here are ten examples of questions that Chris Voss might ask in a negotiation:\n\n1. What is the biggest challenge you face in this situation?\n2. What are your biggest concerns or priorities?\n3. What would you like to see happen as a result of this negotiation?\n4. What is the most important thing to you in this negotiation?\n5. What are your thoughts on how we can work together to achieve our goals?\n6. What do you see as the biggest obstacles to reaching an agreement?\n7. What is your biggest fear or concern about this negotiation?\n8. What would you like to see me do differently to help us reach an agreement?\n9. What is the most important thing you need from me in this negotiation?\n10. What can we do to build trust and work together more effective"
+    },
+    {
+     "id": "hs2-013",
+     "human": 1,
+     "judge": 4,
+     "question": "i want you to act as an expert chrome extension developer. i want to create a brief for my upwork job. the job is to create a very simple chrome extension that lets users access our eli5 feature that takes a prompt and sends it to davinci 003 via api and returns a completion. write a brief for me",
+     "answer": "To create a simple Chrome extension that allows users to access your ELI5 (Explain Like I'm 5) feature, you will need to follow these steps:\n\n1. Define the purpose and goals of the extension:\n\n- The extension should allow users to access the ELI5 feature from within the Chrome browser.\n- The extension should be easy to use and should provide a seamless experience for users.\n\n2. Determine the functionality of the extension:\n\n- The extension should have a simple user interface that allows users to enter a prompt or question.\n- The extension should send the prompt to the Davinci 003 API and receive a completion in return.\n- The extension should display the completion to the user in an easy-to-read format.\n\n3. Decide on the design of the extension:\n\n- The extension should have a clean and simple design that is easy to use and navigate.\n- The extension should have a consistent look and feel w"
+    },
+    {
+     "id": "hs2-014",
+     "human": 1,
+     "judge": 4,
+     "question": "Tell me all the information you have on Vikram Kailas who is Managing director and Chief Executive of Mytrah Energy",
+     "answer": "Vikram Kailas is the Managing Director and Chief Executive of Mytrah Energy, a renewable energy company based in the United Kingdom. Here is some information on him:\n\n- Education: Vikram Kailas holds a Bachelor of Technology degree in Chemical Engineering from the Indian Institute of Technology, Delhi, and a Master of Business Administration degree from the Indian Institute of Management, Bangalore.\n\n- Career: Before joining Mytrah Energy, Vikram Kailas has worked in various roles in the energy and infrastructure sectors. He has over 20 years of experience in the industry and has worked in India, Southeast Asia, and Africa. He has held senior positions in companies such as AES Corporation, IL&FS Energy Development Company, and IL&FS Financial Services.\n\n- Achievements: Under Vikram Kailas' leadership, Mytrah Energy has grown to become one of the largest renewable energy companies in Indi"
+    },
+    {
+     "id": "hs2-037",
+     "human": 1,
+     "judge": 4,
+     "question": "fallacy in which i say that he is worse than me so choose me",
+     "answer": "That would be an example of the argumentum ad baculum, or \"appeal to force.\" It's a type of logical fallacy where an argument is made by threatening or intimidating the other person into agreeing with you.\n\nThis type of argument is not based on reason or evidence, but rather on the fear of consequences if the other person doesn't comply. It's often used in situations where the person making the argument has no real evidence to support their claim, and instead relies on the power dynamics of the situation to get their way.\n\nWhile it may be tempting to use this type of argument in certain situations, it's important to remember that it's not a valid way to reach a conclusion. Instead, it's better to focus on presenting evidence and reasoning to support your position, and to respect the other person's right to disagree."
+    }
+   ]
+  },
+  {
+   "file": "sql_judge__Qwen_Qwen2.5-1.5B-Instruct.json",
+   "name": "sql-judge",
+   "description": "76 distinct SQL queries written by the AI Data Analyst Agent for 40 business questions. The judge reads the schema, the question and the query and says CORRECT or INCORRECT. The truth label comes from running the query.\n",
+   "judge_model": "local:Qwen/Qwen2.5-1.5B-Instruct",
+   "human_label": "execution result",
+   "scale": null,
+   "labels": [
+    "CORRECT",
+    "INCORRECT"
+   ],
+   "stats": {
+    "n": 76,
+    "graded": 76,
+    "unreadable": 0,
+    "categories": [
+     "CORRECT",
+     "INCORRECT"
+    ],
+    "agreement": 0.6184,
+    "kappa": 0.0316,
+    "confusion": [
+     [
+      41,
+      14
+     ],
+     [
+      15,
+      6
+     ]
+    ],
+    "pass_fail": {
+     "n": 76,
+     "agreement": 0.6184,
+     "kappa": 0.0316,
+     "bad_answers": 21,
+     "bad_caught": 6,
+     "bad_caught_rate": 0.2857,
+     "good_answers": 55,
+     "good_wrongly_failed": 14,
+     "bad_let_through": 15,
+     "judge_pass_rate": 0.7368,
+     "human_pass_rate": 0.7237,
+     "majority_baseline": 0.7237
+    }
+   },
+   "human_distribution": {
+    "CORRECT": 55,
+    "INCORRECT": 21
+   },
+   "judge_distribution": {
+    "INCORRECT": 20,
+    "CORRECT": 56
+   },
+   "disagreements": [
+    {
+     "id": "q01-001",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "How many customers do we have?",
+     "answer": "SELECT\n  COUNT(*) AS total_customers\nFROM customers\nLIMIT 200"
+    },
+    {
+     "id": "q03-003",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "How many products are in the Electronics category?",
+     "answer": "SELECT\n  COUNT(product_id) AS num_products\nFROM products\nWHERE\n  category = 'Electronics'\nLIMIT 200"
+    },
+    {
+     "id": "q04-004",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "How many orders were cancelled?",
+     "answer": "SELECT\n  COUNT(*) AS cancelled_orders\nFROM orders\nWHERE\n  status = 'cancelled'\nLIMIT 200"
+    },
+    {
+     "id": "q04-040",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "How many orders were cancelled?",
+     "answer": "SELECT COUNT(*) AS cancelled_orders\nFROM orders\nWHERE status = 'cancelled'"
+    },
+    {
+     "id": "q05-005",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "What is the most expensive product in the catalogue?",
+     "answer": "SELECT\n  product_name,\n  MAX(list_price_inr) AS max_list_price_inr\nFROM products\nLIMIT 200"
+    },
+    {
+     "id": "q06-006",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "How many customers are based in Mumbai?",
+     "answer": "SELECT\n  COUNT(*) AS num_customers\nFROM customers\nWHERE\n  city = 'Mumbai'\nLIMIT 200"
+    },
+    {
+     "id": "q07-007",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "How many customers signed up in 2026?",
+     "answer": "SELECT\n  COUNT(*) AS num_customers\nFROM customers\nWHERE\n  signup_date LIKE '2026%'\nLIMIT 200"
+    },
+    {
+     "id": "q08-008",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "How many orders were paid using UPI?",
+     "answer": "SELECT\n  COUNT(*) AS upi_orders\nFROM orders\nWHERE\n  payment_method = 'UPI'\nLIMIT 200"
+    }
+   ]
+  },
+  {
+   "file": "sql_judge__Qwen_Qwen2.5-3B-Instruct.json",
+   "name": "sql-judge",
+   "description": "76 distinct SQL queries written by the AI Data Analyst Agent for 40 business questions. The judge reads the schema, the question and the query and says CORRECT or INCORRECT. The truth label comes from running the query.\n",
+   "judge_model": "local:Qwen/Qwen2.5-3B-Instruct",
+   "human_label": "execution result",
+   "scale": null,
+   "labels": [
+    "CORRECT",
+    "INCORRECT"
+   ],
+   "stats": {
+    "n": 76,
+    "graded": 76,
+    "unreadable": 0,
+    "categories": [
+     "CORRECT",
+     "INCORRECT"
+    ],
+    "agreement": 0.6974,
+    "kappa": 0.0289,
+    "confusion": [
+     [
+      51,
+      4
+     ],
+     [
+      19,
+      2
+     ]
+    ],
+    "pass_fail": {
+     "n": 76,
+     "agreement": 0.6974,
+     "kappa": 0.0289,
+     "bad_answers": 21,
+     "bad_caught": 2,
+     "bad_caught_rate": 0.0952,
+     "good_answers": 55,
+     "good_wrongly_failed": 4,
+     "bad_let_through": 19,
+     "judge_pass_rate": 0.9211,
+     "human_pass_rate": 0.7237,
+     "majority_baseline": 0.7237
+    }
+   },
+   "human_distribution": {
+    "CORRECT": 55,
+    "INCORRECT": 21
+   },
+   "judge_distribution": {
+    "CORRECT": 70,
+    "INCORRECT": 6
+   },
+   "disagreements": [
+    {
+     "id": "q02-002",
+     "human": "INCORRECT",
+     "judge": "CORRECT",
+     "question": "How many orders have been placed in total?",
+     "answer": "SELECT\n  COUNT(*) AS total_orders\nFROM orders\nWHERE\n  status IN ('delivered', 'shipped')\nLIMIT 200"
+    },
+    {
+     "id": "q05-005",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "What is the most expensive product in the catalogue?",
+     "answer": "SELECT\n  product_name,\n  MAX(list_price_inr) AS max_list_price_inr\nFROM products\nLIMIT 200"
+    },
+    {
+     "id": "q05-041",
+     "human": "CORRECT",
+     "judge": "INCORRECT",
+     "question": "What is the most expensive product in the catalogue?",
+     "answer": "SELECT product_name, list_price_inr\nFROM products\nORDER BY list_price_inr DESC\nLIMIT 1"
+    },
+    {
+     "id": "q10-046",
+     "human": "INCORRECT",
+     "judge": "CORRECT",
+     "question": "How many orders were placed in each month of 2026?",
+     "answer": "SELECT substr(o.order_date, 1, 7) AS month, COUNT(*) AS orders\nFROM orders o\nWHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%'\nGROUP BY month\nORDER BY month"
+    },
+    {
+     "id": "q12-012",
+     "human": "INCORRECT",
+     "judge": "CORRECT",
+     "question": "What was revenue last month?",
+     "answer": "SELECT\n  ROUND(SUM(oi.quantity * oi.unit_price_inr * (\n    1 - oi.discount_pct / 100.0\n  )), 2) AS revenue_last_month_inr\nFROM order_items AS oi\nJOIN orders AS o\n  ON o.order_id = oi.order_id\nWHERE\n  o.status IN ('delivered', 'shipped')\n  AND o.order_date BETWEEN '2026-08-01' AND '2026-09-30'\nLIMIT 200"
+    },
+    {
+     "id": "q13-013",
+     "human": "INCORRECT",
+     "judge": "CORRECT",
+     "question": "What is the average order value in 2026?",
+     "answer": "SELECT\n  ROUND(AVG(line_revenue), 2) AS avg_order_value\nFROM (\n  SELECT\n    SUM(quantity * unit_price_inr * (\n      1 - discount_pct / 100.0\n    )) AS line_revenue\n  FROM order_items AS oi\n  JOIN orders AS o\n    ON o.order_id = oi.order_id\n  WHERE\n    o.status IN ('delivered', 'shipped')\n    AND o.order_date BETWEEN '2026-01-01' AND '2026-12-31'\n) AS subquery\nLIMIT 200"
+    },
+    {
+     "id": "q13-049",
+     "human": "INCORRECT",
+     "judge": "CORRECT",
+     "question": "What is the average order value in 2026?",
+     "answer": "SELECT ROUND(AVG(line_revenue), 2) AS average_order_value_inr\nFROM (\n    SELECT oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0) AS line_revenue\n    FROM order_items oi\n    JOIN orders o ON o.order_id = oi.order_id\n    WHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%'\n) AS revenue_per_order"
+    },
+    {
+     "id": "q14-014",
+     "human": "INCORRECT",
+     "judge": "CORRECT",
+     "question": "What is the revenue for each product category?",
+     "answer": "SELECT\n  p.category,\n  SUM(oi.quantity * oi.unit_price_inr * (\n    1 - oi.discount_pct / 100.0\n  )) AS revenue_inr\nFROM order_items AS oi\nJOIN orders AS o\n  ON o.order_id = oi.order_id\nJOIN products AS p\n  ON p.product_id = oi.product_id\nGROUP BY\n  p.category\nORDER BY\n  revenue_inr DESC\nLIMIT 200"
+    }
+   ]
+  }
+ ]
 }
