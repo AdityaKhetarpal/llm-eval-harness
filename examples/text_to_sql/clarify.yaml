@@ -1,0 +1,14 @@
+# 5 vague questions ("How are we doing?"). Guessing a metric gives a confident wrong answer,
+# so the right move is to ask back. A rule-based check is enough here: no AI judge needed.
+name: text-to-sql-clarify
+description: Vague questions where the agent should ask a clarifying question instead of guessing.
+target:
+  type: replay
+  file: runs/2026-11-05-3B.clarify.jsonl
+checks:
+  - type: is_question                # has a "?" and is not a SQL query
+  - type: not_contains
+    value: ["couldn't write a working query"]
+gate:
+  min_pass_rate: 0.4
+cases: clarify_cases.jsonl

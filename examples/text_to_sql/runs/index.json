@@ -1,0 +1,30 @@
+[
+  {
+    "label": "2026-10-19-1.5B",
+    "date": "2026-10-19",
+    "model": "Qwen2.5-Coder-1.5B-Instruct",
+    "commit": "0f34a9e",
+    "agent_reported_accuracy_pct": 57.5
+  },
+  {
+    "label": "2026-10-19-3B",
+    "date": "2026-10-19",
+    "model": "Qwen2.5-Coder-3B-Instruct",
+    "commit": "f30bc09",
+    "agent_reported_accuracy_pct": 80.0
+  },
+  {
+    "label": "2026-10-26-3B",
+    "date": "2026-10-26",
+    "model": "Qwen2.5-Coder-3B-Instruct",
+    "commit": "8f24a04",
+    "agent_reported_accuracy_pct": 80.0
+  },
+  {
+    "label": "2026-11-05-3B",
+    "date": "2026-11-05",
+    "model": "Qwen2.5-Coder-3B-Instruct",
+    "commit": "2396ab3",
+    "agent_reported_accuracy_pct": 80.0
+  }
+]

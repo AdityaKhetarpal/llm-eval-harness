@@ -1,0 +1,59 @@
+name: evalgate
+description: Run an LLM eval suite and fail the job if quality dropped compared with a baseline run.
+author: Aditya Khetarpal
+branding:
+  icon: check-circle
+  color: green
+
+inputs:
+  suite:
+    description: Path to the suite YAML file
+    required: true
+  baseline:
+    description: Path to a saved baseline run (JSON). Leave empty to only run the suite.
+    required: false
+    default: ""
+  outputs:
+    description: Optional file of saved answers to replay instead of the suite's target
+    required: false
+    default: ""
+  min-pass-rate:
+    description: Optional floor for the pass rate (0-1); overrides the suite's gate
+    required: false
+    default: ""
+  max-new-failures:
+    description: Optional number of previously passing cases allowed to fail; overrides the suite's gate
+    required: false
+    default: ""
+  python-version:
+    description: Python version to use
+    required: false
+    default: "3.12"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install evalgate
+      shell: bash
+      run: pip install -q "${{ github.action_path }}"
+    - name: Run the gate
+      shell: bash
+      env:
+        SUITE: ${{ inputs.suite }}
+        BASELINE: ${{ inputs.baseline }}
+        OUTPUTS: ${{ inputs.outputs }}
+        MIN_PASS: ${{ inputs.min-pass-rate }}
+        MAX_NEW: ${{ inputs.max-new-failures }}
+      run: |
+        args=()
+        [ -n "$OUTPUTS" ] && args+=(--outputs "$OUTPUTS")
+        [ -n "$MIN_PASS" ] && args+=(--min-pass-rate "$MIN_PASS")
+        if [ -n "$BASELINE" ]; then
+          [ -n "$MAX_NEW" ] && args+=(--max-new-failures "$MAX_NEW")
+          evalgate gate "$SUITE" --baseline "$BASELINE" -q "${args[@]}"
+        else
+          evalgate run "$SUITE" -q "${args[@]}"
+        fi

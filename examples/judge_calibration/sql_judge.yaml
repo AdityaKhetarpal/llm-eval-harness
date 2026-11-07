@@ -1,0 +1,29 @@
+# Can an AI judge tell if a SQL query is right just by reading it?
+# Ground truth comes from EXECUTION (each query was run and its result compared with the correct query),
+# so this measures the judge against facts, not opinions.
+name: sql-judge
+description: >
+  76 distinct SQL queries written by the AI Data Analyst Agent for 40 business questions.
+  The judge reads the schema, the question and the query and says CORRECT or INCORRECT.
+  The truth label comes from running the query.
+human_label: execution result
+dataset: sql_judge_set.jsonl
+context_file: sql_schema.txt
+fields:
+  id: id
+  question: question
+  answer: sql
+  human: label
+judge:
+  provider: local
+  model: Qwen/Qwen2.5-3B-Instruct
+  labels: [CORRECT, INCORRECT]
+  pass_labels: [CORRECT]
+  max_tokens: 8
+  rubric: >
+    Decide whether the SQL query correctly answers the question on the database described in CONTEXT.
+    It is CORRECT only if it would return the right numbers: right tables and columns, right joins,
+    right filters (follow the BUSINESS DEFINITIONS exactly, e.g. revenue only counts delivered and shipped orders),
+    right grouping and the right time period. Column names and row order do not matter.
+    Otherwise it is INCORRECT.
+show_disagreements: 8

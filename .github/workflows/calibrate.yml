@@ -1,0 +1,147 @@
+name: Calibrate the AI judge
+
+# How well does an AI judge agree with people (HelpSteer2) and with facts (SQL checked by execution)?
+# Runs free local models on the GitHub runner's CPU, so no API key is needed. Takes 1-2 hours.
+on:
+  workflow_dispatch:
+    inputs:
+      engine:
+        description: "local = free Qwen models on the runner; api = any OpenAI-compatible API (needs the LLM_API_KEY secret)"
+        type: choice
+        options: [local, api]
+        default: local
+      limit:
+        description: "Grade only the first N rows of each set (empty = all). Handy for a quick test."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: calibrate
+  cancel-in-progress: false
+
+jobs:
+  sample:
+    runs-on: ubuntu-latest
+    outputs:
+      models: ${{ steps.models.outputs.models }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download the HelpSteer2 sample (100 human-graded answers)
+        run: |
+          pip install -q huggingface_hub
+          if [ ! -f examples/judge_calibration/helpsteer2_sample.jsonl ]; then python scripts/fetch_helpsteer2.py; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: helpsteer2-sample
+          path: examples/judge_calibration/helpsteer2_sample.jsonl
+      - id: models
+        env:
+          ENGINE: ${{ inputs.engine }}
+          API_MODEL: ${{ vars.LLM_MODEL }}
+        run: |
+          if [ "$ENGINE" = "api" ]; then
+            echo "models=[\"${API_MODEL:-llama-3.3-70b-versatile}\"]" >> "$GITHUB_OUTPUT"
+          else
+            echo 'models=["Qwen/Qwen2.5-1.5B-Instruct","Qwen/Qwen2.5-3B-Instruct"]' >> "$GITHUB_OUTPUT"
+          fi
+
+  judge:
+    needs: sample
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    strategy:
+      fail-fast: false
+      matrix:
+        model: ${{ fromJSON(needs.sample.outputs.models) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: helpsteer2-sample
+          path: examples/judge_calibration
+      - name: Install
+        run: |
+          if [ "${{ inputs.engine }}" = "local" ]; then
+            pip install -q torch --index-url https://download.pytorch.org/whl/cpu
+            pip install -q transformers accelerate
+          fi
+          pip install -q -e .
+      - uses: actions/cache@v4
+        if: inputs.engine == 'local'
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ matrix.model }}
+      - name: Grade both sets
+        env:
+          MODEL: ${{ matrix.model }}
+          ENGINE: ${{ inputs.engine }}
+          LIMIT: ${{ inputs.limit }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+        run: |
+          slug=$(echo "$MODEL" | tr '/' '_' )
+          mkdir -p calibration
+          extra=()
+          [ -n "$LIMIT" ] && extra+=(--limit "$LIMIT")
+          if [ "$ENGINE" = "api" ]; then
+            extra+=(--provider openai --base-url "${LLM_BASE_URL:-https://api.groq.com/openai/v1}" --api-key-env LLM_API_KEY)
+          fi
+          for spec in helpsteer2 sql_judge; do
+            evalgate calibrate "examples/judge_calibration/$spec.yaml" --model "$MODEL" -q "${extra[@]}" \
+              --cache "calibration/${spec}__${slug}.grades.jsonl" \
+              --out "calibration/${spec}__${slug}.json"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: calibration-${{ strategy.job-index }}
+          path: calibration/
+
+  publish:
+    needs: judge
+    if: always() && needs.judge.result != 'cancelled'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@v4
+        with:
+          name: helpsteer2-sample
+          path: examples/judge_calibration
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: calibration-*
+          path: downloaded
+          merge-multiple: true
+      - name: Collect results and rebuild the website data
+        run: |
+          pip install -q -e .
+          mkdir -p examples/judge_calibration/results
+          cp downloaded/*.json examples/judge_calibration/results/ 2>/dev/null || true
+          ls -la examples/judge_calibration/results
+          python scripts/build_site_data.py
+      - name: Publish the results
+        run: |
+          git config user.name "Aditya Khetarpal"
+          git config user.email "80028073+AdityaKhetarpal@users.noreply.github.com"
+          git add examples/judge_calibration/results examples/judge_calibration/helpsteer2_sample.jsonl web/data/site.json
+          if git diff --cached --quiet; then echo "Nothing changed."; exit 0; fi
+          git commit -m "Judge calibration results $(date -u +%Y-%m-%d)"
+          git stash push --include-untracked --message "not published" || true
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then echo "Published."; exit 0; fi
+            git rebase --abort 2>/dev/null || true
+            echo "Push failed (attempt $attempt), retrying in 20 seconds..."; sleep 20
+          done
+          echo "Could not publish the results after 3 attempts."; exit 1

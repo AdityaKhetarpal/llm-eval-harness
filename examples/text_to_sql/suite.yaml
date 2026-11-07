@@ -1,0 +1,18 @@
+# The 40 business questions of the AI Data Analyst Agent
+# (github.com/AdityaKhetarpal/ai-data-analyst-agent), checked by EXECUTION:
+# the agent's SQL and the correct SQL both run on the shop database, and the RESULTS are compared.
+# Many different queries are correct, so comparing the SQL text would be wrong.
+name: text-to-sql
+description: 40 questions about an Indian online shop. The agent must write SQL whose result matches the correct query.
+target:
+  type: replay
+  file: runs/2026-11-05-3B.jsonl     # the latest weekly run; pass --outputs to test another one
+checks:
+  - type: sql_result
+    database: shop.db
+    row_limit: 200                   # the agent caps every query at 200 rows, so the check does too
+gate:
+  min_pass_rate: 0.75                # never ship below 75%
+  max_drop: 0.0                      # no drop allowed vs the baseline
+  max_new_failures: 0                # and no question that worked may break
+cases: cases.jsonl

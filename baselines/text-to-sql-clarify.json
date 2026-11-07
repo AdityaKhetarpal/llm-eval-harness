@@ -1,0 +1,166 @@
+{
+  "evalgate_version": "0.1.0",
+  "suite": "text-to-sql-clarify",
+  "description": "Vague questions where the agent should ask a clarifying question instead of guessing.",
+  "label": "2026-11-05-3B (live)",
+  "target": "replay:2026-11-05-3B.clarify.jsonl",
+  "created_at": "2026-11-07T14:32:04Z",
+  "gate": {
+    "min_pass_rate": 0.4,
+    "max_drop": 0.0,
+    "max_new_failures": 0
+  },
+  "summary": {
+    "cases": 5,
+    "passed": 2,
+    "failed": 3,
+    "errors": 0,
+    "pass_rate": 0.4,
+    "mean_score": 0.7,
+    "by_tag": {
+      "vague": {
+        "passed": 2,
+        "cases": 5,
+        "pass_rate": 0.4
+      }
+    },
+    "seconds": 0.0
+  },
+  "cases": [
+    {
+      "id": "v1",
+      "input": "Show me the best products",
+      "expected": null,
+      "output": "SELECT p.product_name, SUM(oi.quantity) AS units_sold\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY p.product_name\nORDER BY units_sold DESC\nLIMIT 1",
+      "tags": [
+        "vague"
+      ],
+      "passed": false,
+      "score": 0.5,
+      "checks": [
+        {
+          "type": "is_question",
+          "passed": false,
+          "score": 0.0,
+          "detail": "answered instead of asking"
+        },
+        {
+          "type": "not_contains",
+          "passed": true,
+          "score": 1.0,
+          "detail": "clean"
+        }
+      ],
+      "error": null,
+      "seconds": 0.0
+    },
+    {
+      "id": "v2",
+      "input": "How are we doing?",
+      "expected": null,
+      "output": "How are we doing? By revenue, units sold, number of orders, or something else?",
+      "tags": [
+        "vague"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "is_question",
+          "passed": true,
+          "score": 1.0,
+          "detail": "asked a clarifying question"
+        },
+        {
+          "type": "not_contains",
+          "passed": true,
+          "score": 1.0,
+          "detail": "clean"
+        }
+      ],
+      "error": null,
+      "seconds": 0.0
+    },
+    {
+      "id": "v3",
+      "input": "Compare the two cities",
+      "expected": null,
+      "output": "SELECT c.city, COUNT(*) AS orders, SUM(oi.quantity) AS units_sold, ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN customers c ON c.customer_id = o.customer_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY c.city\nORDER BY revenue_inr DESC\nLIMIT 2",
+      "tags": [
+        "vague"
+      ],
+      "passed": false,
+      "score": 0.5,
+      "checks": [
+        {
+          "type": "is_question",
+          "passed": false,
+          "score": 0.0,
+          "detail": "answered instead of asking"
+        },
+        {
+          "type": "not_contains",
+          "passed": true,
+          "score": 1.0,
+          "detail": "clean"
+        }
+      ],
+      "error": null,
+      "seconds": 0.0
+    },
+    {
+      "id": "v4",
+      "input": "What is the growth?",
+      "expected": null,
+      "output": "Growth in what? Revenue, units sold, or number of orders?",
+      "tags": [
+        "vague"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "is_question",
+          "passed": true,
+          "score": 1.0,
+          "detail": "asked a clarifying question"
+        },
+        {
+          "type": "not_contains",
+          "passed": true,
+          "score": 1.0,
+          "detail": "clean"
+        }
+      ],
+      "error": null,
+      "seconds": 0.0
+    },
+    {
+      "id": "v5",
+      "input": "Give me the sales numbers",
+      "expected": null,
+      "output": "SELECT \n    SUM(CASE WHEN o.status IN ('delivered', 'shipped') THEN oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0) ELSE 0 END) AS total_revenue_inr,\n    COUNT(DISTINCT o.order_id) AS total_orders,\n    COUNT(DISTINCT c.customer_id) AS total_customers\nFROM \n    order_items oi\nJOIN \n    orders o ON o.order_id = oi.order_id\nJOIN \n    customers c ON c.customer_id = o.customer_id\nWHERE \n    o.status IN ('delivered', 'shipped')",
+      "tags": [
+        "vague"
+      ],
+      "passed": false,
+      "score": 0.5,
+      "checks": [
+        {
+          "type": "is_question",
+          "passed": false,
+          "score": 0.0,
+          "detail": "answered instead of asking"
+        },
+        {
+          "type": "not_contains",
+          "passed": true,
+          "score": 1.0,
+          "detail": "clean"
+        }
+      ],
+      "error": null,
+      "seconds": 0.0
+    }
+  ]
+}

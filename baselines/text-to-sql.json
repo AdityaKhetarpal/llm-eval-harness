@@ -1,0 +1,881 @@
+{
+  "evalgate_version": "0.1.0",
+  "suite": "text-to-sql",
+  "description": "40 questions about an Indian online shop. The agent must write SQL whose result matches the correct query.",
+  "label": "2026-11-05-3B (live)",
+  "target": "replay:2026-11-05-3B.jsonl",
+  "created_at": "2026-11-07T14:32:04Z",
+  "gate": {
+    "min_pass_rate": 0.75,
+    "max_drop": 0.0,
+    "max_new_failures": 0
+  },
+  "summary": {
+    "cases": 40,
+    "passed": 32,
+    "failed": 8,
+    "errors": 0,
+    "pass_rate": 0.8,
+    "mean_score": 0.8,
+    "by_tag": {
+      "easy": {
+        "passed": 9,
+        "cases": 10,
+        "pass_rate": 0.9
+      },
+      "hard": {
+        "passed": 1,
+        "cases": 7,
+        "pass_rate": 0.1429
+      },
+      "medium": {
+        "passed": 22,
+        "cases": 23,
+        "pass_rate": 0.9565
+      }
+    },
+    "seconds": 0.32
+  },
+  "cases": [
+    {
+      "id": "q01",
+      "input": "How many customers do we have?",
+      "expected": "SELECT COUNT(*) FROM customers",
+      "output": "SELECT COUNT(DISTINCT customer_id) AS total_customers\nFROM customers",
+      "tags": [
+        "easy"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.001
+    },
+    {
+      "id": "q02",
+      "input": "How many orders have been placed in total?",
+      "expected": "SELECT COUNT(*) FROM orders",
+      "output": "SELECT COUNT(*) AS total_orders\nFROM orders",
+      "tags": [
+        "easy"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.001
+    },
+    {
+      "id": "q03",
+      "input": "How many products are in the Electronics category?",
+      "expected": "SELECT COUNT(*) FROM products WHERE category = 'Electronics'",
+      "output": "SELECT COUNT(*) AS electronics_products\nFROM products\nWHERE category = 'Electronics'",
+      "tags": [
+        "easy"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.0
+    },
+    {
+      "id": "q04",
+      "input": "How many orders were cancelled?",
+      "expected": "SELECT COUNT(*) FROM orders WHERE status = 'cancelled'",
+      "output": "SELECT COUNT(*) AS cancelled_orders\nFROM orders\nWHERE status = 'cancelled'",
+      "tags": [
+        "easy"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.001
+    },
+    {
+      "id": "q05",
+      "input": "What is the most expensive product in the catalogue?",
+      "expected": "SELECT product_name, list_price_inr FROM products ORDER BY list_price_inr DESC LIMIT 1",
+      "output": "SELECT product_name, list_price_inr\nFROM products\nORDER BY list_price_inr DESC\nLIMIT 1",
+      "tags": [
+        "easy"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.0
+    },
+    {
+      "id": "q06",
+      "input": "How many customers are based in Mumbai?",
+      "expected": "SELECT COUNT(*) FROM customers WHERE city = 'Mumbai'",
+      "output": "SELECT COUNT(*) AS customers_mumbai\nFROM customers\nWHERE city = 'Mumbai'",
+      "tags": [
+        "easy"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.0
+    },
+    {
+      "id": "q07",
+      "input": "How many customers signed up in 2026?",
+      "expected": "SELECT COUNT(*) FROM customers WHERE signup_date LIKE '2026%'",
+      "output": "SELECT COUNT(*) AS customers_signed_up_2026\nFROM customers\nWHERE signup_date LIKE '2026%'",
+      "tags": [
+        "easy"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.0
+    },
+    {
+      "id": "q08",
+      "input": "How many orders were paid using UPI?",
+      "expected": "SELECT COUNT(*) FROM orders WHERE payment_method = 'UPI'",
+      "output": "SELECT COUNT(*) AS upi_orders\nFROM orders\nWHERE payment_method = 'UPI'",
+      "tags": [
+        "easy"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.002
+    },
+    {
+      "id": "q09",
+      "input": "What percentage of all orders were paid by Cash on Delivery?",
+      "expected": "SELECT 100.0 * SUM(payment_method = 'Cash on Delivery') / COUNT(*) FROM orders",
+      "output": "SELECT ROUND(100.0 * SUM(o.payment_method = 'Cash on Delivery') / COUNT(*), 2) AS cash_on_delivery_percentage\nFROM orders o",
+      "tags": [
+        "easy"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.002
+    },
+    {
+      "id": "q10",
+      "input": "How many orders were placed in each month of 2026?",
+      "expected": "SELECT substr(order_date, 1, 7) AS month, COUNT(*) FROM orders WHERE order_date LIKE '2026%' GROUP BY month ORDER BY month",
+      "output": "SELECT substr(o.order_date, 1, 7) AS month, COUNT(*) AS orders\nFROM orders o\nWHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%'\nGROUP BY month\nORDER BY month",
+      "tags": [
+        "easy"
+      ],
+      "passed": false,
+      "score": 0.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": false,
+          "score": 0.0,
+          "detail": "different values"
+        }
+      ],
+      "error": null,
+      "seconds": 0.004
+    },
+    {
+      "id": "q11",
+      "input": "What was our total revenue in 2025?",
+      "expected": "SELECT SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id WHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2025%'",
+      "output": "SELECT ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS total_revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nWHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2025%'",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.007
+    },
+    {
+      "id": "q12",
+      "input": "What was revenue last month?",
+      "expected": "SELECT SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id WHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026-09%'",
+      "output": "SELECT ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nWHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026-09%'",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.005
+    },
+    {
+      "id": "q13",
+      "input": "What is the average order value in 2026?",
+      "expected": "SELECT SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) / COUNT(DISTINCT o.order_id) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id WHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%'",
+      "output": "SELECT ROUND(AVG(line_revenue), 2) AS average_order_value_inr\nFROM (\n    SELECT oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0) AS line_revenue\n    FROM order_items oi\n    JOIN orders o ON o.order_id = oi.order_id\n    WHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%'\n) AS revenue_per_order",
+      "tags": [
+        "medium"
+      ],
+      "passed": false,
+      "score": 0.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": false,
+          "score": 0.0,
+          "detail": "different values"
+        }
+      ],
+      "error": null,
+      "seconds": 0.009
+    },
+    {
+      "id": "q14",
+      "input": "What is the revenue for each product category?",
+      "expected": "SELECT p.category, SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.status IN ('delivered', 'shipped') GROUP BY p.category",
+      "output": "SELECT p.category, ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY p.category\nORDER BY revenue_inr DESC",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (7 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.021
+    },
+    {
+      "id": "q15",
+      "input": "Which category had the highest revenue in 2026?",
+      "expected": "SELECT p.category FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%' GROUP BY p.category ORDER BY SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) DESC LIMIT 1",
+      "output": "SELECT p.category, ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%'\nGROUP BY p.category\nORDER BY revenue_inr DESC\nLIMIT 1",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.013
+    },
+    {
+      "id": "q16",
+      "input": "What are the top 5 products by revenue?",
+      "expected": "SELECT p.product_name, SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) AS r FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.status IN ('delivered', 'shipped') GROUP BY p.product_id ORDER BY r DESC LIMIT 5",
+      "output": "SELECT p.product_name, ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY p.product_name\nORDER BY revenue_inr DESC\nLIMIT 5",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (5 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.021
+    },
+    {
+      "id": "q17",
+      "input": "What are the top 5 products by units sold?",
+      "expected": "SELECT p.product_name, SUM(oi.quantity) AS u FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.status IN ('delivered', 'shipped') GROUP BY p.product_id ORDER BY u DESC LIMIT 5",
+      "output": "SELECT p.product_name, SUM(oi.quantity) AS units_sold\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY p.product_name\nORDER BY units_sold DESC\nLIMIT 5",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (5 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.017
+    },
+    {
+      "id": "q18",
+      "input": "Which city generated the most revenue?",
+      "expected": "SELECT c.city FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN customers c ON c.customer_id = o.customer_id WHERE o.status IN ('delivered', 'shipped') GROUP BY c.city ORDER BY SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) DESC LIMIT 1",
+      "output": "SELECT c.city, ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN customers c ON c.customer_id = o.customer_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY c.city\nORDER BY revenue_inr DESC\nLIMIT 1",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.021
+    },
+    {
+      "id": "q19",
+      "input": "Show revenue by state for 2026.",
+      "expected": "SELECT c.state, SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN customers c ON c.customer_id = o.customer_id WHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%' GROUP BY c.state",
+      "output": "SELECT c.state, ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN customers c ON c.customer_id = o.customer_id\nWHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%'\nGROUP BY c.state\nORDER BY revenue_inr DESC",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (14 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.013
+    },
+    {
+      "id": "q20",
+      "input": "Show the monthly revenue trend for 2026.",
+      "expected": "SELECT substr(o.order_date, 1, 7) AS month, SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id WHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%' GROUP BY month ORDER BY month",
+      "output": "SELECT strftime('%Y-%m', o.order_date) AS month, SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nWHERE o.status IN ('delivered', 'shipped') AND o.order_date LIKE '2026%'\nGROUP BY month\nORDER BY month",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (9 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.012
+    },
+    {
+      "id": "q21",
+      "input": "What is our overall return rate?",
+      "expected": "SELECT 100.0 * SUM(status = 'returned') / SUM(status != 'cancelled') FROM orders",
+      "output": "SELECT ROUND(100.0 * SUM(status = 'returned') / SUM(status != 'cancelled'), 2) AS return_rate_pct\nFROM orders",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.002
+    },
+    {
+      "id": "q22",
+      "input": "What is the cancellation rate for each payment method?",
+      "expected": "SELECT payment_method, 100.0 * SUM(status = 'cancelled') / COUNT(*) FROM orders GROUP BY payment_method",
+      "output": "SELECT payment_method, ROUND(100.0 * SUM(o.status = 'cancelled') / COUNT(*), 2) AS cancellation_rate_pct\nFROM orders o\nGROUP BY payment_method",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (5 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.008
+    },
+    {
+      "id": "q23",
+      "input": "Which brand brings in the most revenue?",
+      "expected": "SELECT p.brand FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.status IN ('delivered', 'shipped') GROUP BY p.brand ORDER BY SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) DESC LIMIT 1",
+      "output": "SELECT p.brand, ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY p.brand\nORDER BY revenue_inr DESC\nLIMIT 1",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.022
+    },
+    {
+      "id": "q24",
+      "input": "What is the average delivery time in days for delivered orders?",
+      "expected": "SELECT AVG(julianday(delivery_date) - julianday(order_date)) FROM orders WHERE status = 'delivered'",
+      "output": "SELECT AVG(julianday(o.delivery_date) - julianday(o.order_date)) AS avg_delivery_time_days\nFROM orders o\nWHERE o.status = 'delivered'",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.004
+    },
+    {
+      "id": "q25",
+      "input": "How many different customers placed an order in September 2026?",
+      "expected": "SELECT COUNT(DISTINCT customer_id) FROM orders WHERE order_date LIKE '2026-09%'",
+      "output": "SELECT COUNT(DISTINCT customer_id) AS customers_placed_order\nFROM orders\nWHERE order_date LIKE '2026-09%'",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.002
+    },
+    {
+      "id": "q26",
+      "input": "How many customers have never placed an order?",
+      "expected": "SELECT COUNT(*) FROM customers WHERE customer_id NOT IN (SELECT customer_id FROM orders)",
+      "output": "SELECT COUNT(*) AS customers_never_ordered\nFROM customers\nWHERE customer_id NOT IN (SELECT customer_id FROM orders)",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.006
+    },
+    {
+      "id": "q27",
+      "input": "Who are our top 5 customers by total spend?",
+      "expected": "SELECT c.name, SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) AS s FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN customers c ON c.customer_id = o.customer_id WHERE o.status IN ('delivered', 'shipped') GROUP BY c.customer_id ORDER BY s DESC LIMIT 5",
+      "output": "SELECT c.name, ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS total_spend\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN customers c ON c.customer_id = o.customer_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY c.customer_id\nORDER BY total_spend DESC\nLIMIT 5",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (5 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.022
+    },
+    {
+      "id": "q28",
+      "input": "Compare revenue from Business and Consumer customers.",
+      "expected": "SELECT c.segment, SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN customers c ON c.customer_id = o.customer_id WHERE o.status IN ('delivered', 'shipped') GROUP BY c.segment",
+      "output": "SELECT \n    c.segment AS customer_segment,\n    ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN customers c ON c.customer_id = o.customer_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY c.segment",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (2 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.017
+    },
+    {
+      "id": "q29",
+      "input": "What was revenue in the 2025 festive season, October and November 2025 combined?",
+      "expected": "SELECT SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id WHERE o.status IN ('delivered', 'shipped') AND o.order_date BETWEEN '2025-10-01' AND '2025-11-30'",
+      "output": "SELECT ROUND(SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS revenue_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status IN ('delivered', 'shipped') AND o.order_date BETWEEN '2025-10-01' AND '2025-11-30'",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.005
+    },
+    {
+      "id": "q30",
+      "input": "What is the average discount percentage across all order lines?",
+      "expected": "SELECT AVG(discount_pct) FROM order_items",
+      "output": "SELECT AVG(discount_pct) AS avg_discount_pct\nFROM order_items",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.002
+    },
+    {
+      "id": "q31",
+      "input": "Which payment method was used most in 2026?",
+      "expected": "SELECT payment_method FROM orders WHERE order_date LIKE '2026%' GROUP BY payment_method ORDER BY COUNT(*) DESC LIMIT 1",
+      "output": "SELECT payment_method, COUNT(*) AS usage_count\nFROM orders\nWHERE order_date LIKE '2026%'\nGROUP BY payment_method\nORDER BY usage_count DESC\nLIMIT 1",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.003
+    },
+    {
+      "id": "q32",
+      "input": "How many customers have placed more than 15 orders?",
+      "expected": "SELECT COUNT(*) FROM (SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(*) > 15)",
+      "output": "SELECT COUNT(*) AS customers_with_more_than_15_orders\nFROM (\n    SELECT customer_id\n    FROM orders\n    GROUP BY customer_id\n    HAVING COUNT(*) > 15\n) AS customer_counts",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.005
+    },
+    {
+      "id": "q33",
+      "input": "How many new customers signed up in each month of 2026?",
+      "expected": "SELECT substr(signup_date, 1, 7) AS month, COUNT(*) FROM customers WHERE signup_date LIKE '2026%' GROUP BY month ORDER BY month",
+      "output": "SELECT strftime('%Y-%m', signup_date) AS month, COUNT(*) AS new_customers\nFROM customers\nWHERE signup_date LIKE '2026%'\nGROUP BY month",
+      "tags": [
+        "medium"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (8 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.001
+    },
+    {
+      "id": "q34",
+      "input": "How many orders contained more than one product?",
+      "expected": "SELECT COUNT(*) FROM (SELECT order_id FROM order_items GROUP BY order_id HAVING COUNT(*) > 1)",
+      "output": "SELECT COUNT(*) AS multi_product_orders\nFROM order_items\nGROUP BY order_id\nHAVING COUNT(product_id) > 1",
+      "tags": [
+        "hard"
+      ],
+      "passed": false,
+      "score": 0.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": false,
+          "score": 0.0,
+          "detail": "200 rows, expected 1"
+        }
+      ],
+      "error": null,
+      "seconds": 0.006
+    },
+    {
+      "id": "q35",
+      "input": "What is the average number of units per valid order?",
+      "expected": "SELECT 1.0 * SUM(oi.quantity) / COUNT(DISTINCT o.order_id) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id WHERE o.status IN ('delivered', 'shipped')",
+      "output": "SELECT AVG(quantity) AS avg_units_per_order\nFROM order_items\nJOIN orders ON orders.order_id = order_items.order_id\nWHERE orders.status IN ('delivered', 'shipped')",
+      "tags": [
+        "hard"
+      ],
+      "passed": false,
+      "score": 0.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": false,
+          "score": 0.0,
+          "detail": "different values"
+        }
+      ],
+      "error": null,
+      "seconds": 0.005
+    },
+    {
+      "id": "q36",
+      "input": "Which product appears in the most returned orders?",
+      "expected": "SELECT p.product_name FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.status = 'returned' GROUP BY p.product_id ORDER BY COUNT(DISTINCT o.order_id) DESC LIMIT 1",
+      "output": "SELECT p.product_name, COUNT(*) AS returned_orders\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status = 'returned'\nGROUP BY p.product_name\nORDER BY returned_orders DESC\nLIMIT 1",
+      "tags": [
+        "hard"
+      ],
+      "passed": true,
+      "score": 1.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": true,
+          "score": 1.0,
+          "detail": "same result (1 rows)"
+        }
+      ],
+      "error": null,
+      "seconds": 0.004
+    },
+    {
+      "id": "q37",
+      "input": "Which 3 cities have the highest average order value?",
+      "expected": "SELECT c.city, SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) / COUNT(DISTINCT o.order_id) AS aov FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN customers c ON c.customer_id = o.customer_id WHERE o.status IN ('delivered', 'shipped') GROUP BY c.city ORDER BY aov DESC LIMIT 3",
+      "output": "SELECT c.city, AVG(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) AS avg_order_value_inr\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN customers c ON c.customer_id = o.customer_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY c.city\nORDER BY avg_order_value_inr DESC\nLIMIT 3",
+      "tags": [
+        "hard"
+      ],
+      "passed": false,
+      "score": 0.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": false,
+          "score": 0.0,
+          "detail": "different values"
+        }
+      ],
+      "error": null,
+      "seconds": 0.022
+    },
+    {
+      "id": "q38",
+      "input": "What percentage of total revenue comes from Electronics?",
+      "expected": "SELECT 100.0 * SUM(CASE WHEN p.category = 'Electronics' THEN oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0) END) / SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN products p ON p.product_id = oi.product_id WHERE o.status IN ('delivered', 'shipped')",
+      "output": "SELECT ROUND(100.0 * SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)) / SUM(oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0)), 2) AS electronics_revenue_pct\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status IN ('delivered', 'shipped') AND p.category = 'Electronics'",
+      "tags": [
+        "hard"
+      ],
+      "passed": false,
+      "score": 0.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": false,
+          "score": 0.0,
+          "detail": "different values"
+        }
+      ],
+      "error": null,
+      "seconds": 0.009
+    },
+    {
+      "id": "q39",
+      "input": "By what percent did revenue grow in Q3 2026 (July to September) compared with Q3 2025?",
+      "expected": "SELECT 100.0 * (SUM(CASE WHEN o.order_date BETWEEN '2026-07-01' AND '2026-09-30' THEN oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0) END) / SUM(CASE WHEN o.order_date BETWEEN '2025-07-01' AND '2025-09-30' THEN oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0) END) - 1) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id WHERE o.status IN ('delivered', 'shipped')",
+      "output": "SELECT ROUND((SUM(CASE WHEN o.order_date LIKE '2026-07%' THEN oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0) ELSE 0 END) -\n             SUM(CASE WHEN o.order_date LIKE '2025-07%' THEN oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0) ELSE 0 END)) /\n            SUM(CASE WHEN o.order_date LIKE '2025-07%' THEN oi.quantity * oi.unit_price_inr * (1 - oi.discount_pct / 100.0) ELSE 0 END) * 100, 2) AS growth_pct\nFROM order_items oi\nJOIN orders o ON o.order_id = oi.order_id\nWHERE o.status IN ('delivered', 'shipped')",
+      "tags": [
+        "hard"
+      ],
+      "passed": false,
+      "score": 0.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": false,
+          "score": 0.0,
+          "detail": "different values"
+        }
+      ],
+      "error": null,
+      "seconds": 0.006
+    },
+    {
+      "id": "q40",
+      "input": "What is the return rate for each product category?",
+      "expected": "SELECT p.category, 100.0 * COUNT(DISTINCT CASE WHEN o.status = 'returned' THEN o.order_id END) / COUNT(DISTINCT CASE WHEN o.status != 'cancelled' THEN o.order_id END) FROM order_items oi JOIN orders o ON o.order_id = oi.order_id JOIN products p ON p.product_id = oi.product_id GROUP BY p.category",
+      "output": "SELECT p.category, ROUND(100.0 * SUM(o.status = 'returned') / COUNT(*), 2) AS return_rate_pct\nFROM orders o\nJOIN order_items oi ON oi.order_id = o.order_id\nJOIN products p ON p.product_id = oi.product_id\nWHERE o.status IN ('delivered', 'shipped')\nGROUP BY p.category",
+      "tags": [
+        "hard"
+      ],
+      "passed": false,
+      "score": 0.0,
+      "checks": [
+        {
+          "type": "sql_result",
+          "passed": false,
+          "score": 0.0,
+          "detail": "different values"
+        }
+      ],
+      "error": null,
+      "seconds": 0.019
+    }
+  ]
+}

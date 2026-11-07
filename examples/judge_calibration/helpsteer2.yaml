@@ -1,0 +1,30 @@
+# Does an AI judge grade answers the way PEOPLE do?
+# 100 question/answer pairs from NVIDIA's HelpSteer2 (CC-BY-4.0), each graded by human annotators
+# for correctness on a 0-4 scale. The judge grades the same answers on the same scale.
+# The sample is made by scripts/fetch_helpsteer2.py (20 answers at each human grade, seed 42).
+name: helpsteer2-correctness
+description: >
+  100 answers from NVIDIA HelpSteer2 with human correctness grades (0-4), 20 at each grade.
+  The judge grades correctness on the same 0-4 scale.
+human_label: human annotators (HelpSteer2)
+dataset: helpsteer2_sample.jsonl
+fields:
+  id: id
+  question: prompt
+  answer: response
+  human: correctness
+judge:
+  provider: local
+  model: Qwen/Qwen2.5-3B-Instruct
+  scale: [0, 4]
+  max_tokens: 8
+  rubric: >
+    Grade CORRECTNESS only: does the answer include all the facts the question needs, without errors?
+    4 = completely correct and complete.
+    3 = correct, with a small omission or a minor slip.
+    2 = partly correct: a clear error or an important omission.
+    1 = mostly wrong.
+    0 = completely wrong, made up, or does not answer the question.
+    Ignore style, length and tone.
+pass_at: 3
+show_disagreements: 8
