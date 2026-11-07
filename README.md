@@ -6,7 +6,7 @@ evalgate runs your AI app on a fixed set of questions, scores every answer, comp
 today, and **fails the build** if anything got worse. It also measures whether an AI judge grades the way people do,
 so you know which scores to trust.
 
-**Live site:** https://llm-eval-harness.vercel.app · **Install:** `pip install "git+https://github.com/AdityaKhetarpal/llm-eval-harness"`
+**Live site:** https://llm-eval-harness-eight.vercel.app · **Install:** `pip install "git+https://github.com/AdityaKhetarpal/llm-eval-harness"`
 
 [![CI](https://github.com/AdityaKhetarpal/llm-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/AdityaKhetarpal/llm-eval-harness/actions/workflows/ci.yml)
 
@@ -121,7 +121,7 @@ Two calibration sets are included:
 | `sql_judge` | 76 distinct SQL queries the agent wrote, labelled by **executing** them | Can a judge tell right SQL from wrong without running it? |
 
 The [Calibrate workflow](.github/workflows/calibrate.yml) runs both with free local models (Qwen2.5 1.5B and 3B on the
-runner's CPU, no API key) and publishes the results to the website's [Judge check](https://llm-eval-harness.vercel.app/judge) page.
+runner's CPU, no API key) and publishes the results to the website's [Judge check](https://llm-eval-harness-eight.vercel.app/judge) page.
 
 ```bash
 evalgate calibrate examples/judge_calibration/sql_judge.yaml --out result.json --cache grades.jsonl
