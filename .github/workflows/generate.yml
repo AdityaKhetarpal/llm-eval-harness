@@ -2,6 +2,9 @@ name: Generate the support-bot answers
 
 # Runs every version of the Voltkart support bot (examples/support_bot/variants.yaml) on all 44 messages
 # with free local Qwen models on the runner's CPU, then commits the answers so evalgate can replay them.
+#
+# Set "from_run" to the id of an earlier run to skip the slow part and only publish the answers it saved
+# (GitHub keeps them for 90 days).
 on:
   workflow_dispatch:
     inputs:
@@ -9,9 +12,14 @@ on:
         description: 'JSON list of versions to run'
         required: false
         default: '["v1-3b", "v2-3b", "v1-1.5b", "v3-3b"]'
+      from_run:
+        description: 'Only publish the answers saved by this earlier run id (leave empty to generate new ones)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: generate
@@ -19,6 +27,7 @@ concurrency:
 
 jobs:
   answer:
+    if: inputs.from_run == ''
     runs-on: ubuntu-latest
     timeout-minutes: 300
     strategy:
@@ -48,36 +57,41 @@ jobs:
 
   publish:
     needs: answer
-    if: always() && needs.answer.result != 'cancelled'
+    if: always() && needs.answer.result != 'cancelled' && needs.answer.result != 'failure'
     runs-on: ubuntu-latest
     steps:
+      # the LATEST main, not the commit this run started from: other commits may have landed in the meantime
       - uses: actions/checkout@v7
+        with:
+          ref: main
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - uses: actions/download-artifact@v4
         with:
           pattern: answers-*
-          path: examples/support_bot/runs
+          path: answers
           merge-multiple: true
-      - name: Save the baseline and rebuild the website data
+          run-id: ${{ inputs.from_run || github.run_id }}
+          github-token: ${{ github.token }}
+      - name: Publish the answers
         run: |
           pip install -q -e .
-          ls -la examples/support_bot/runs
-          mkdir -p baselines
-          evalgate run examples/support_bot/suite.yaml --label "v1-3b (live)" -q --out baselines/support-bot.json
-          python scripts/build_site_data.py
-      - name: Publish
-        run: |
           git config user.name "Aditya Khetarpal"
           git config user.email "80028073+AdityaKhetarpal@users.noreply.github.com"
-          git add examples/support_bot/runs baselines web/data/site.json
-          if git diff --cached --quiet; then echo "Nothing changed."; exit 0; fi
-          git commit -m "Support bot answers $(date -u +%Y-%m-%d)"
-          git stash push --include-untracked --message "not published" || true
+          ls -la answers
+          # the data files are rebuilt from scratch on top of the latest main each time,
+          # so a commit that landed meanwhile can never cause a conflict
           for attempt in 1 2 3; do
-            if git pull --rebase origin main && git push origin HEAD:main; then echo "Published."; exit 0; fi
-            git rebase --abort 2>/dev/null || true
+            git fetch -q origin main && git reset -q --hard origin/main
+            mkdir -p examples/support_bot/runs baselines
+            cp answers/* examples/support_bot/runs/
+            evalgate run examples/support_bot/suite.yaml --label "v1-3b (live)" -q --out baselines/support-bot.json
+            python scripts/build_site_data.py
+            git add examples/support_bot/runs baselines web/data/site.json
+            if git diff --cached --quiet; then echo "Nothing changed."; exit 0; fi
+            git commit -q -m "Support bot answers $(date -u +%Y-%m-%d)"
+            if git push origin HEAD:main; then echo "Published."; exit 0; fi
             echo "Push failed (attempt $attempt), retrying in 20 seconds..."; sleep 20
           done
           echo "Could not publish after 3 attempts."; exit 1

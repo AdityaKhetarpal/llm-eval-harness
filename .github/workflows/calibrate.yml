@@ -60,88 +60,38 @@ jobs:
       matrix:
         model: ${{ fromJSON(needs.sample.outputs.models) }}
     steps:
+      # the LATEST main, so commits that landed during the 1-2 hour run can't conflict
       - uses: actions/checkout@v7
+        with:
+          ref: main
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - uses: actions/download-artifact@v4
         with:
           name: helpsteer2-sample
-          path: examples/judge_calibration
-      - name: Install
-        run: |
-          if [ "${{ inputs.engine }}" = "local" ]; then
-            pip install -q torch --index-url https://download.pytorch.org/whl/cpu
-            pip install -q transformers accelerate
-          fi
-          pip install -q -e .
-      - uses: actions/cache@v4
-        if: inputs.engine == 'local'
-        with:
-          path: ~/.cache/huggingface
-          key: hf-${{ matrix.model }}
-      - name: Grade both sets
-        env:
-          MODEL: ${{ matrix.model }}
-          ENGINE: ${{ inputs.engine }}
-          LIMIT: ${{ inputs.limit }}
-          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
-        run: |
-          slug=$(echo "$MODEL" | tr '/' '_' )
-          mkdir -p calibration
-          extra=()
-          [ -n "$LIMIT" ] && extra+=(--limit "$LIMIT")
-          if [ "$ENGINE" = "api" ]; then
-            extra+=(--provider openai --base-url "${LLM_BASE_URL:-https://api.groq.com/openai/v1}" --api-key-env LLM_API_KEY)
-          fi
-          for spec in helpsteer2; do
-            evalgate calibrate "examples/judge_calibration/$spec.yaml" --model "$MODEL" -q "${extra[@]}" \
-              --cache "calibration/${spec}__${slug}.grades.jsonl" \
-              --out "calibration/${spec}__${slug}.json"
-          done
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: calibration-${{ strategy.job-index }}
-          path: calibration/
-
-  publish:
-    needs: judge
-    if: always() && needs.judge.result != 'cancelled'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-      - uses: actions/download-artifact@v4
-        with:
-          name: helpsteer2-sample
-          path: examples/judge_calibration
+          path: downloaded-sample
       - uses: actions/download-artifact@v4
         with:
           pattern: calibration-*
           path: downloaded
           merge-multiple: true
-      - name: Collect results and rebuild the website data
-        run: |
-          pip install -q -e .
-          mkdir -p examples/judge_calibration/results
-          cp downloaded/*.json examples/judge_calibration/results/ 2>/dev/null || true
-          ls -la examples/judge_calibration/results
-          python scripts/build_site_data.py
       - name: Publish the results
         run: |
+          pip install -q -e .
           git config user.name "Aditya Khetarpal"
           git config user.email "80028073+AdityaKhetarpal@users.noreply.github.com"
-          git add examples/judge_calibration/results examples/judge_calibration/helpsteer2_sample.jsonl web/data/site.json
-          if git diff --cached --quiet; then echo "Nothing changed."; exit 0; fi
-          git commit -m "Judge calibration results $(date -u +%Y-%m-%d)"
-          git stash push --include-untracked --message "not published" || true
+          # rebuilt from scratch on top of the latest main each attempt, so there is nothing to conflict with
           for attempt in 1 2 3; do
-            if git pull --rebase origin main && git push origin HEAD:main; then echo "Published."; exit 0; fi
-            git rebase --abort 2>/dev/null || true
+            git fetch -q origin main && git reset -q --hard origin/main
+            mkdir -p examples/judge_calibration/results
+            cp downloaded-sample/helpsteer2_sample.jsonl examples/judge_calibration/
+            cp downloaded/*.json examples/judge_calibration/results/ 2>/dev/null || true
+            python scripts/build_site_data.py
+            git add examples/judge_calibration/results examples/judge_calibration/helpsteer2_sample.jsonl web/data/site.json
+            if git diff --cached --quiet; then echo "Nothing changed."; exit 0; fi
+            git commit -q -m "Judge calibration results $(date -u +%Y-%m-%d)"
+            if git push origin HEAD:main; then echo "Published."; exit 0; fi
             echo "Push failed (attempt $attempt), retrying in 20 seconds..."; sleep 20
           done
           echo "Could not publish the results after 3 attempts."; exit 1
