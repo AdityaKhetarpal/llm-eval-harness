@@ -1,0 +1,11 @@
+{
+  "label": "v1-3b",
+  "model": "Qwen/Qwen2.5-3B-Instruct",
+  "prompt": "prompts/v1.txt",
+  "generated_at": "2026-11-07T18:05:38Z",
+  "machine": "GitHub Actions runner (x86_64, CPU only)",
+  "decoding": "greedy, max 220 new tokens",
+  "total_seconds": 1474.2,
+  "mean_seconds_per_answer": 33.5,
+  "errors": 0
+}
