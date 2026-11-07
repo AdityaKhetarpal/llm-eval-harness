@@ -5,6 +5,7 @@ import "@fontsource/ibm-plex-mono/500.css";
 import "@fontsource/ibm-plex-mono/600.css";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import SmoothScroll from "@/components/SmoothScroll";
 import { REPO, site } from "@/lib/data";
 
 const ONE_LINER =
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
+        <SmoothScroll />
         <Nav />
         <main>{children}</main>
         <footer>

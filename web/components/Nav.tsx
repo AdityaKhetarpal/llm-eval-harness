@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Mark from "@/components/Mark";
 
 const LINKS = [
   { href: "/bot", label: "The bot" },
@@ -12,15 +13,6 @@ const LINKS = [
   { href: "/docs", label: "Docs" },
 ];
 
-export function Mark() {
-  return (
-    <svg className="brand-mark" viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="1" y="1" width="22" height="22" rx="6" fill="currentColor" />
-      <path d="M7 12.5l3.2 3.2L17 8.8" fill="none" stroke="var(--bg)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 export default function Nav() {
   const path = usePathname();
   return (
@@ -30,7 +22,7 @@ export default function Nav() {
           <Mark />
           <span>evalgate</span>
         </Link>
-        <div className="nav-links">
+        <div className="nav-links" aria-label="Pages">
           {LINKS.map((l) => (
             <Link key={l.href} href={l.href} aria-current={path.startsWith(l.href) ? "page" : undefined}>
               {l.label}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Code from "@/components/Code";
 import PassRateChart from "@/components/PassRateChart";
 import { Verdict } from "@/components/Verdict";
+import GateHero, { type Cell } from "@/components/GateHero";
 import { REPO, calibrationsBySet, kappaWords, modelName, pct, site, worstChange } from "@/lib/data";
 
 export default function Home() {
@@ -20,64 +21,89 @@ export default function Home() {
     cases: r.summary.cases,
   }));
 
+  // One square per exam question for the opening picture: the riskiest change if the runs are in,
+  // otherwise the exam itself, grouped by skill.
+  const base = site.runs.find((r) => r.role === "baseline");
+  const cand = worst ? site.runs.find((r) => r.label === worst.candidate.label) : undefined;
+  const broke = new Set(worst?.newly_failing.map((c) => c.id));
+  const fixedIds = new Set(worst?.newly_passing.map((c) => c.id));
+  const tagIndex = (id: string) => Math.max(0, site.suite.tags.findIndex((t) => t.id === id));
+  const cells: Cell[] =
+    worst && base && cand
+      ? cand.cases.map((c) => {
+          const before = base.cases.find((b) => b.id === c.id);
+          const state = broke.has(c.id) ? "broke" : fixedIds.has(c.id) ? "fixed" : c.passed && before?.passed ? "ok" : "known";
+          return { id: c.id, label: c.input, state, group: tagIndex(c.tags[0]) };
+        })
+      : site.suite.tags.flatMap((t, g) =>
+          Array.from({ length: t.cases }, (_, i) => ({ id: `${t.id}-${i}`, label: t.name, state: "waiting" as const, group: g })),
+        );
+
   return (
     <>
       <section className="wrap hero">
-        <div className="eyebrow">Open-source LLM eval harness · Python + GitHub Action</div>
-        <h1>
-          Catch the change that makes
-          <br />
-          your LLM app worse, before it ships.
-        </h1>
-        <p className="lede">
-          evalgate gives your AI app the same exam after every change: a fixed set of questions, each answer checked
-          automatically, and the score compared with the version that is live. If anything got worse, the build fails and
-          the change can&apos;t ship. It also tests whether an AI judge grades the way people do.
-        </p>
-        <div className="buttons">
-          <Link className="btn primary" href="/gate">See what the gate caught</Link>
-          <a className="btn" href={REPO} target="_blank" rel="noreferrer">GitHub</a>
-          <Link className="btn" href="/docs">Get started</Link>
+        <div className="hero-copy">
+          <p className="eyebrow">Open-source LLM eval harness for Python and GitHub Actions</p>
+          <h1>Catch the change that makes your LLM app worse, before it ships.</h1>
+          <p className="lede">
+            evalgate gives your AI app the same exam after every change. Each answer is checked automatically and the score is
+            compared with the version that is live. If anything got worse, the build fails and the change can&apos;t ship.
+          </p>
+          <div className="buttons">
+            <Link className="btn primary" href="/gate">See what the gate caught</Link>
+            <Link className="btn" href="/docs">Get started</Link>
+            <a className="btn ghost" href={REPO} target="_blank" rel="noreferrer">GitHub</a>
+          </div>
         </div>
+        <GateHero
+          cells={cells}
+          verdict={worst ? worst.verdict : null}
+          title={worst?.title ?? ""}
+          from={worst ? pct(worst.baseline.pass_rate) : ""}
+          to={worst ? pct(worst.candidate.pass_rate) : ""}
+          broke={worst?.newly_failing.length ?? 0}
+          fixed={worst?.newly_passing.length ?? 0}
+          href={worst ? `/gate?c=${worst.kind}` : "/gate"}
+        />
       </section>
 
       <section className="wrap">
-        <div className="grid g4">
-          <div className="card stat">
-            <div className="num">{site.suite.cases}</div>
-            <div className="label">customer messages in the demo exam</div>
-            <div className="sub">{site.suite.tags.length} skills, from policy facts to prompt-injection attacks</div>
+        <dl className="facts">
+          <div>
+            <dt>Customer messages in the demo exam</dt>
+            <dd>{site.suite.cases}</dd>
+            <p>{site.suite.tags.length} skills, from policy facts to prompt-injection attacks</p>
           </div>
-          <div className="card stat">
-            <div className="num">{ready ? `${blocked}/${site.comparisons.length}` : "–"}</div>
-            <div className="label">changes to the bot blocked by the gate</div>
-            <div className="sub">each one ran for real on a free model</div>
-          </div>
-          <div className="card stat">
-            <div className="num">{worst ? worst.newly_failing.length : "–"}</div>
-            <div className="label">answers that broke in the riskiest change</div>
-            <div className="sub">{worst ? `“${worst.title}”` : "answers are being generated"}</div>
-          </div>
-          <div className="card stat">
-            {bestJudge ? (
-              <>
-                <div className="num">{bestJudge.stats.pass_fail!.kappa.toFixed(2)}</div>
-                <div className="label">best agreement of a free AI judge with human graders (kappa, {kappaWords(bestJudge.stats.pass_fail!.kappa)})</div>
-                <div className="sub">{bestJudge.stats.pass_fail!.kappa < 0.4 ? "Too low to trust: " : ""}<Link href="/judge">see why</Link></div>
-              </>
-            ) : (
-              <>
-                <div className="num">{site.checks.length}</div>
-                <div className="label">built-in checks</div>
-              </>
-            )}
-          </div>
-        </div>
+          {ready && (
+            <div>
+              <dt>Changes to the bot blocked by the gate</dt>
+              <dd>{blocked}/{site.comparisons.length}</dd>
+              <p>each one ran for real on a free model</p>
+            </div>
+          )}
+          {ready && worst && (
+            <div>
+              <dt>Answers that broke in the riskiest change</dt>
+              <dd className="t-fail">{worst.newly_failing.length}</dd>
+              <p>{worst.title}</p>
+            </div>
+          )}
+          {bestJudge && (
+            <div>
+              <dt>Best agreement of a free AI judge with human graders</dt>
+              <dd>{bestJudge.stats.pass_fail!.kappa.toFixed(2)}</dd>
+              <p>
+                kappa, {kappaWords(bestJudge.stats.pass_fail!.kappa)}.{" "}
+                {bestJudge.stats.pass_fail!.kappa < 0.4 ? "Too low to trust. " : ""}
+                <Link href="/judge">See why</Link>
+              </p>
+            </div>
+          )}
+        </dl>
       </section>
 
-      <section className="wrap section" style={{ marginTop: 40 }}>
+      <section className="wrap section">
         <div className="section-head">
-          <div className="eyebrow">The demo</div>
           <h2>A support chatbot, and four versions of it</h2>
           <p>
             Voltkart is a made-up online electronics store. Its chatbot answers customers from a one-page{" "}
@@ -86,16 +112,15 @@ export default function Home() {
             {site.suite.cases} messages with a free Qwen model on GitHub&apos;s servers, and evalgate checked every answer.
           </p>
         </div>
-        <div className="grid g3" style={{ marginBottom: 14 }}>
-          {site.suite.tags.map((t) => (
-            <div key={t.id} className="card" style={{ padding: 14 }}>
-              <div className="row" style={{ justifyContent: "space-between" }}>
-                <b>{t.name}</b>
-                <span className="mono small muted">{t.cases} messages</span>
-              </div>
-            </div>
+        <ul className="skills">
+          {site.suite.tags.map((t, i) => (
+            <li key={t.id}>
+              <i className={`cell waiting g${i % 6}`} aria-hidden="true" />
+              <b>{t.name}</b>
+              <span className="muted">{t.cases}</span>
+            </li>
           ))}
-        </div>
+        </ul>
         {ready ? (
           <div className="grid g2" style={{ alignItems: "start" }}>
             <div className="card">
@@ -119,29 +144,32 @@ export default function Home() {
             </div>
           </div>
         ) : (
-          <p className="callout">The four versions are answering the exam on GitHub right now. Results appear here when they finish.</p>
+          <p className="callout">
+            The four versions are answering the exam on GitHub right now, which takes a few hours on free servers. The chart
+            and the gate results appear here when they finish.{" "}
+            <a href={`${REPO}/actions/workflows/generate.yml`} target="_blank" rel="noreferrer">Watch the run</a>
+          </p>
         )}
       </section>
 
       <section className="wrap section">
         <div className="section-head">
-          <div className="eyebrow">How it works</div>
           <h2>Four steps, one YAML file</h2>
         </div>
         <div className="steps">
-          <div className="step card">
+          <div className="step">
             <h3>Write the exam</h3>
             <p>Questions and the checks each answer must pass: a fact it must mention, text it must never say, valid JSON, a number, a SQL result, or an AI judge.</p>
           </div>
-          <div className="step card">
+          <div className="step">
             <h3>Run it</h3>
             <p>Point it at your app: a file of saved answers, a shell command, a Python function, or any OpenAI-compatible model.</p>
           </div>
-          <div className="step card">
+          <div className="step">
             <h3>Gate it</h3>
             <p>Compare with the live version. Fail CI if the pass rate drops, falls below a floor, or any answer that was right is now wrong.</p>
           </div>
-          <div className="step card">
+          <div className="step">
             <h3>Trust the judge</h3>
             <p>Before an AI judge grades your answers, measure how often it agrees with human graders, corrected for luck.</p>
           </div>
@@ -152,7 +180,6 @@ export default function Home() {
         <div className="grid g2">
           <div>
             <div className="section-head">
-              <div className="eyebrow">A test case</div>
               <h2>Readable by anyone on the team</h2>
               <p>Two of the {site.suite.cases} messages from the demo exam.</p>
             </div>
@@ -177,7 +204,6 @@ export default function Home() {
           </div>
           <div>
             <div className="section-head">
-              <div className="eyebrow">In CI</div>
               <h2>A few lines in a GitHub workflow</h2>
               <p>The job fails on a regression and writes the report to the run&apos;s summary page.</p>
             </div>
