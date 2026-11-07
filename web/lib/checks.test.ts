@@ -50,19 +50,23 @@ describe("checks (same cases as the Python tests)", () => {
 });
 
 describe("site data (made by scripts/build_site_data.py)", () => {
-  it("has the four real runs with the scores the agent reported", () => {
-    expect(site.runs).toHaveLength(4);
+  it("describes the support-bot exam", () => {
+    expect(site.suite.cases).toBe(44);
+    expect(site.suite.tags.reduce((n, t) => n + t.cases, 0)).toBe(44);
+    expect(site.suite.reference_pass_rate).toBe(1);
+    expect(site.policy).toContain("VOLTKART");
+  });
+  it("has consistent runs and comparisons", () => {
     for (const r of site.runs) {
-      expect(r.summary.cases).toBe(40);
-      expect(r.summary.pass_rate * 100).toBeCloseTo(r.agent_reported_accuracy_pct, 5);
+      expect(r.cases).toHaveLength(44);
       expect(r.cases.filter((c) => c.passed)).toHaveLength(r.summary.passed);
     }
-  });
-  it("has the three gate decisions", () => {
-    const kinds = Object.fromEntries(site.comparisons.map((c) => [c.kind, c.verdict]));
-    expect(kinds).toEqual({ rollback: "FAIL", upgrade: "FAIL", weekly: "PASS" });
-    const rollback = site.comparisons.find((c) => c.kind === "rollback")!;
-    expect(rollback.newly_failing).toHaveLength(10);
+    const baseline = site.runs.find((r) => r.role === "baseline");
+    for (const c of site.comparisons) {
+      expect(c.baseline.label).toBe(baseline?.label);
+      expect(["PASS", "FAIL"]).toContain(c.verdict);
+      if (c.newly_failing.length > c.rules.max_new_failures) expect(c.verdict).toBe("FAIL");
+    }
   });
   it("formats numbers", () => {
     expect(pct(0.575)).toBe("57.5%");

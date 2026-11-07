@@ -128,7 +128,7 @@ jobs:
           judge has to beat it.
         </p>
         <Code>{`
-evalgate calibrate examples/judge_calibration/sql_judge.yaml --out result.json \\
+evalgate calibrate examples/judge_calibration/helpsteer2.yaml --out result.json \\
   --cache grades.jsonl     # saves grades as they arrive, so a stopped run can resume
 `}</Code>
 

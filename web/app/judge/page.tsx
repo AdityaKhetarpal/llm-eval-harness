@@ -98,21 +98,13 @@ export default function JudgePage() {
         </p>
       </div>
 
-      <div className="grid g2">
-        <div className="card">
-          <h3>People as the standard</h3>
-          <p>
-            100 answers from NVIDIA&apos;s HelpSteer2 dataset, each graded 0–4 for correctness by human annotators. 20 answers at
-            each grade, so a judge can&apos;t look good by saying &quot;correct&quot; to everything.
-          </p>
-        </div>
-        <div className="card">
-          <h3>Facts as the standard</h3>
-          <p>
-            76 distinct SQL queries the agent wrote, each labelled by <b>running</b> it. The judge sees only the schema, the
-            question and the query. Can it tell a right query from a wrong one without running it?
-          </p>
-        </div>
+      <div className="card">
+        <h3>The test</h3>
+        <p>
+          100 answers from NVIDIA&apos;s public HelpSteer2 dataset, each graded 0–4 for correctness by human annotators, 20
+          answers at each grade so a judge can&apos;t look good by saying &quot;correct&quot; to everything. Two free models
+          (Qwen2.5 1.5B and 3B, running on GitHub&apos;s servers) graded the same answers on the same scale.
+        </p>
       </div>
 
       {sets.length === 0 && (
@@ -130,7 +122,7 @@ export default function JudgePage() {
               const pf = c.stats.pass_fail!;
               return (
                 <li key={c.file}>
-                  {s.name === "sql-judge" ? "Reading SQL" : "Grading correctness"}, {modelName(c.judge_model)}: caught{" "}
+                  {modelName(c.judge_model)}: caught{" "}
                   {pf.bad_caught} of {pf.bad_answers} bad answers, kappa {pf.kappa.toFixed(2)} ({kappaWords(pf.kappa)})
                   {pf.agreement < pf.majority_baseline
                     ? `. It agreed less often than always saying "${baselineWord(pf)}" would (${pct(pf.agreement)} vs ${pct(pf.majority_baseline)}).`
@@ -141,8 +133,8 @@ export default function JudgePage() {
           </ul>
           {sets.every((s) => s.items.every((c) => !advice(c).ok)) && (
             <>
-              No free judge here is good enough to gate on. That is why the text-to-SQL suite checks answers by{" "}
-              <b>running</b> them, and why a judge should be calibrated before anyone trusts its scores.
+              No free judge here is good enough to gate on. That is why the support-bot exam uses rule-based checks, and
+              why a judge should be calibrated before anyone trusts its scores.
             </>
           )}
         </div>
@@ -151,7 +143,7 @@ export default function JudgePage() {
       {sets.map((s) => (
         <section key={s.name} className="section" style={{ marginTop: 32 }}>
           <div className="section-head">
-            <h2>{s.name === "sql-judge" ? "Judging SQL without running it" : "Grading correctness like a person"}</h2>
+            <h2>Grading correctness like a person</h2>
             <p>{s.items[0].description}</p>
           </div>
           <div className="grid g2" style={{ alignItems: "start" }}>

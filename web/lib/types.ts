@@ -13,26 +13,31 @@ export type Summary = {
   seconds: number;
 };
 
+export type CheckRow = { type: string; passed: boolean; detail: string };
+
 export type CaseRow = {
   id: string;
   input: string;
-  expected: string | null;
   output: string | null;
   tags: string[];
   passed: boolean;
   error: string | null;
+  seconds: number;
+  checks: CheckRow[];
   why: string;
 };
 
 export type Run = {
   label: string;
-  date: string;
+  role: "baseline" | "candidate";
+  title: string;
+  change: string;
+  prompt: string;
   model: string;
-  commit: string;
-  agent_reported_accuracy_pct: number;
+  meta: { generated_at?: string; machine?: string; decoding?: string; mean_seconds_per_answer?: number; total_seconds?: number };
+  mean_seconds: number | null;
   summary: Summary;
   cases: CaseRow[];
-  clarify: { label: string; summary: Summary; cases: CaseRow[] };
 };
 
 export type Change = { id: string; input: string; tags: string[]; before: string | null; after: string | null; why: string };
@@ -98,11 +103,22 @@ export type Calibration = {
   disagreements: { id: string; human: string | number; judge: string | number; question: string; answer: string }[];
 };
 
+export type Tag = { id: string; name: string; cases: number };
+
 export type Site = {
   generated_at: string;
   version: string;
   checks: string[];
-  suite: { name: string; description: string; gate: Comparison["rules"]; cases: number };
+  suite: {
+    name: string;
+    description: string;
+    gate: Comparison["rules"];
+    cases: number;
+    tags: Tag[];
+    reference_pass_rate: number;
+  };
+  policy: string;
+  prompts: Record<string, string>;
   runs: Run[];
   comparisons: Comparison[];
   calibrations: Calibration[];
