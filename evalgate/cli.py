@@ -171,7 +171,7 @@ def cmd_calibrate(args) -> int:
                   f" · Spearman {st['spearman']}")
         pf = st["pass_fail"]
         caught = "–" if pf["bad_caught_rate"] is None else f"{pf['bad_caught_rate']:.0%}"
-        print(f"  pass/fail agreement {pf['agreement']:.1%} (always-pass baseline {pf['majority_baseline']:.1%})"
+        print(f"  pass/fail agreement {pf['agreement']:.1%} (same-verdict-every-time baseline {pf['majority_baseline']:.1%})"
               f" · bad answers caught {pf['bad_caught']}/{pf['bad_answers']} ({caught})")
     if args.out:
         Path(args.out).parent.mkdir(parents=True, exist_ok=True)

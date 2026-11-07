@@ -111,7 +111,7 @@ the known 22.5-point regression.
 - exact agreement, **Cohen's kappa** (agreement corrected for luck), weighted kappa and Spearman;
 - a confusion matrix;
 - the pass/fail view: of the answers that should fail, **how many did the judge catch**?
-- the score of "always say pass", which a useful judge has to beat.
+- the score of always giving the more common verdict, which a useful judge has to beat.
 
 Two calibration sets are included:
 
@@ -122,6 +122,20 @@ Two calibration sets are included:
 
 The [Calibrate workflow](.github/workflows/calibrate.yml) runs both with free local models (Qwen2.5 1.5B and 3B on the
 runner's CPU, no API key) and publishes the results to the website's [Judge check](https://llm-eval-harness-eight.vercel.app/judge) page.
+
+**Results (7 Nov 2026):**
+
+| Set | Judge | Bad answers caught | Pass/fail agreement | Same-verdict baseline | Cohen's kappa |
+|---|---|---|---|---|---|
+| HelpSteer2 | Qwen2.5-1.5B | 3 / 60 | 42.4% | 60.6% | 0.04 |
+| HelpSteer2 | Qwen2.5-3B | 20 / 60 | 54.0% | 60.0% | 0.16 (weighted κ 0.27 on the 0–4 scale) |
+| SQL | Qwen2.5-1.5B | 6 / 21 | 61.8% | 72.4% | 0.03 |
+| SQL | Qwen2.5-3B | 2 / 21 | 69.7% | 72.4% | 0.03 |
+
+None of these judges is good enough to gate on. The 1.5B judge gave the top grade to 92 of 99 answers. Reading SQL,
+both judges agreed with the truth *less* often than a judge that always says the same verdict. That is why the
+text-to-SQL suite checks answers by running them, and why a judge should be calibrated before anyone trusts it.
+The same specs can test a bigger model: add an `LLM_API_KEY` secret (e.g. a Groq key) and run the Calibrate workflow with engine `api`.
 
 ```bash
 evalgate calibrate examples/judge_calibration/sql_judge.yaml --out result.json --cache grades.jsonl

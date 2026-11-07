@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   description: "How often does a small AI judge agree with human graders and with execution results?",
 };
 
+/** The verdict a lazy judge would give every time: whichever is more common in the truth labels. */
+const baselineWord = (pf: { human_pass_rate: number }) => (pf.human_pass_rate >= 0.5 ? "pass" : "fail");
+
 /** A plain-words recommendation, computed from the numbers (not written by hand per model). */
 function advice(c: Calibration): { ok: boolean; text: string } {
   const pf = c.stats.pass_fail!;
@@ -37,7 +40,7 @@ function JudgeCard({ c }: { c: Calibration }) {
         <div className="stat">
           <div className="num" style={{ fontSize: 28 }}>{pct(pf.agreement)}</div>
           <div className="label">pass/fail agreement</div>
-          <div className="sub">always saying &quot;pass&quot; would score {pct(pf.majority_baseline)}</div>
+          <div className="sub">always saying &quot;{baselineWord(pf)}&quot; would score {pct(pf.majority_baseline)}</div>
         </div>
         <div className="stat">
           <div className="num" style={{ fontSize: 28 }}>{pf.kappa.toFixed(2)}</div>
@@ -57,7 +60,7 @@ function JudgeCard({ c }: { c: Calibration }) {
           {st.mean_judge}. Pass means a grade of {st.pass_at} or more.
         </p>
       )}
-      {st.unreadable > 0 && <p className="small muted" style={{ marginTop: 6 }}>{st.unreadable} replies could not be read as a grade and were left out.</p>}
+      {st.unreadable > 0 && <p className="small muted" style={{ marginTop: 6 }}>{st.unreadable} {st.unreadable === 1 ? "reply" : "replies"} could not be read as a grade and were left out.</p>}
       {st.confusion && st.categories && (
         <div style={{ marginTop: 16 }}>
           <Confusion matrix={st.confusion} categories={st.categories} rowTitle={c.human_label.startsWith("execution") ? "truth" : "people"} colTitle="judge" />
@@ -117,6 +120,32 @@ export default function JudgePage() {
           The calibration runs on GitHub Actions with free local models (about 1–2 hours on a CPU). Results appear here when the
           run finishes. See the <a href={`${REPO}/actions/workflows/calibrate.yml`}>Calibrate workflow</a>.
         </p>
+      )}
+
+      {sets.length > 0 && (
+        <div className="callout" style={{ marginTop: 24 }}>
+          <b>What the numbers say</b>
+          <ul style={{ margin: "8px 0", paddingLeft: 20 }}>
+            {sets.flatMap((s) => s.items.map((c) => {
+              const pf = c.stats.pass_fail!;
+              return (
+                <li key={c.file}>
+                  {s.name === "sql-judge" ? "Reading SQL" : "Grading correctness"}, {modelName(c.judge_model)}: caught{" "}
+                  {pf.bad_caught} of {pf.bad_answers} bad answers, kappa {pf.kappa.toFixed(2)} ({kappaWords(pf.kappa)})
+                  {pf.agreement < pf.majority_baseline
+                    ? `. It agreed less often than always saying "${baselineWord(pf)}" would (${pct(pf.agreement)} vs ${pct(pf.majority_baseline)}).`
+                    : "."}
+                </li>
+              );
+            }))}
+          </ul>
+          {sets.every((s) => s.items.every((c) => !advice(c).ok)) && (
+            <>
+              No free judge here is good enough to gate on. That is why the text-to-SQL suite checks answers by{" "}
+              <b>running</b> them, and why a judge should be calibrated before anyone trusts its scores.
+            </>
+          )}
+        </div>
       )}
 
       {sets.map((s) => (

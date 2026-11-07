@@ -63,8 +63,13 @@ export default function Home() {
             {bestJudge ? (
               <>
                 <div className="num">{bestJudge.stats.pass_fail!.kappa.toFixed(2)}</div>
-                <div className="label">best judge agreement (Cohen&apos;s kappa), {kappaWords(bestJudge.stats.pass_fail!.kappa)}</div>
-                <div className="sub">{modelName(bestJudge.judge_model)} on {bestJudge.name}</div>
+                <div className="label">
+                  best agreement of a free AI judge with the truth (Cohen&apos;s kappa, {kappaWords(bestJudge.stats.pass_fail!.kappa)})
+                </div>
+                <div className="sub">
+                  {modelName(bestJudge.judge_model)}. {bestJudge.stats.pass_fail!.kappa < 0.4 ? "Too low to gate on: " : ""}
+                  <Link href="/judge">see why</Link>
+                </div>
               </>
             ) : (
               <>

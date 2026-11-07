@@ -15,7 +15,7 @@ We let the judge grade the same answers and measure agreement:
     Spearman             do judge and people RANK answers in the same order?
     pass/fail view       turn both grades into pass/fail and ask: of the answers people FAILED,
                          how many did the judge catch? (that is the number that matters in a CI gate)
-    baseline             the agreement you'd get by always saying "pass". A judge must beat this to be useful.
+    baseline             the agreement you would get by always giving the more common verdict. A judge must beat it.
 
 A calibration spec (YAML):
 

@@ -124,7 +124,7 @@ jobs:
           A judge check is only as good as the judge. Before you gate on one, give it answers whose grade is already known and
           measure agreement. <code>evalgate calibrate</code> reports exact agreement, Cohen&apos;s kappa (agreement corrected for
           luck), weighted kappa and Spearman for number scales, a confusion matrix, and the pass/fail view: of the answers people
-          failed, how many did the judge catch? It also shows the score you&apos;d get by always saying &quot;pass&quot;; a useful
+          failed, how many did the judge catch? It also shows the score you&apos;d get by always giving the more common verdict; a useful
           judge has to beat it.
         </p>
         <Code>{`
