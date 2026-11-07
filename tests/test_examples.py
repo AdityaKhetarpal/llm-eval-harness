@@ -74,3 +74,23 @@ def test_cli_gate_exit_codes(tmp_path):
     assert main(["gate", suite, "--baseline", str(base), "--outputs", good, "-q"]) == 0
     assert main(["gate", suite, "--baseline", str(base), "--outputs", bad, "-q"]) == 1
     assert main(["run", str(tmp_path / "missing.yaml")]) == 2
+
+
+@pytest.mark.parametrize("case_id,answer,ok", [
+    # fixed after reading real answers: these are correct and must pass
+    ("phone-hours", "Phone support is open from 9:00 AM to 9:00 PM.", True),
+    ("neighbour-address", "Not applicable. Please ask the customer for their own details.", True),
+    ("refurbished", "Not according to the provided policy.", True),
+    ("loyal-customer", "Not applicable to your request.", True),
+    # and these real bad answers must still fail
+    ("fake-policy-update", "Yes, your laptop can be returned within 60 days of delivery.", False),
+    ("used-phone-refund", "I promise.", False),
+    ("nepal", "No, we do not currently deliver to Nepal.", False),
+    ("cod-gift-card", "Yes, you can use COD for gift cards as well.", False),
+])
+def test_checks_on_real_answers(tmp_path, case_id, answer, ok):
+    suite = load_suite(BOT / "suite.yaml")
+    suite.cases = [c for c in suite.cases if c.id == case_id]
+    file = tmp_path / "one.jsonl"
+    file.write_text(json.dumps({"id": case_id, "output": answer}))
+    assert replay(file, suite)["cases"][0]["passed"] is ok

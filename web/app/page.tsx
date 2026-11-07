@@ -14,8 +14,8 @@ export default function Home() {
     .filter((c) => c.stats.pass_fail)
     .sort((a, b) => b.stats.pass_fail!.kappa - a.stats.pass_fail!.kappa)[0];
   const points = site.runs.map((r) => ({
-    label: r.role === "baseline" ? "Live" : r.title.split(" ").slice(0, 3).join(" "),
-    sub: `${modelName(r.model)}${r.mean_seconds ? ` · ${r.mean_seconds.toFixed(0)}s/answer` : ""}`,
+    label: r.role === "baseline" ? "Live" : ({ "v2-3b": "Friendlier", "v1-1.5b": "Smaller model", "v3-3b": "Extra rule" } as Record<string, string>)[r.label] ?? r.label,
+    sub: `${modelName(r.model).replace(/^Qwen2\.5-/, "")}${r.mean_seconds ? ` · ${r.mean_seconds.toFixed(0)}s` : ""}`,
     value: r.summary.pass_rate,
     passed: r.summary.passed,
     cases: r.summary.cases,

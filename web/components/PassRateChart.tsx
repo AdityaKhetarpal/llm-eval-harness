@@ -24,7 +24,6 @@ export default function PassRateChart({ points, floor }: { points: Point[]; floo
           </g>
         ))}
         <line className="floor" x1={L} x2={W - R} y1={y(floor)} y2={y(floor)} />
-        <text className="floor-label" x={L + 6} y={y(floor) - 6} textAnchor="start">gate minimum {Math.round(floor * 100)}%</text>
         {points.map((p, i) => {
           const cx = L + slot * i + slot / 2;
           const top = y(p.value);
@@ -48,6 +47,10 @@ export default function PassRateChart({ points, floor }: { points: Point[]; floo
         })}
         <line className="axis" x1={L} x2={W - R} y1={y(0)} y2={y(0)} />
       </svg>
+      <p className="small muted" style={{ marginTop: 6 }}>
+        <span aria-hidden="true" style={{ display: "inline-block", width: 18, borderTop: "2px dashed var(--fail)", verticalAlign: "middle", marginRight: 6 }} />
+        gate minimum {Math.round(floor * 100)}% · under each bar: model size and time per answer
+      </p>
       {hover !== null && (
         <div className="tooltip" style={{ left: `${((L + slot * hover + slot / 2) / W) * 100}%`, top: `${(y(points[hover].value) / H) * 100}%` }}>
           <b>{points[hover].label}</b> · {points[hover].sub}
