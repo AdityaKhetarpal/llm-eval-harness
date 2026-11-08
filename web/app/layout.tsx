@@ -12,7 +12,7 @@ const ONE_LINER =
   "Open-source LLM eval harness: test an AI app on a fixed question set, block regressions in CI, and check that your AI judge agrees with humans.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://llm-eval-harness-eight.vercel.app"),
+  metadataBase: new URL("https://evalgate-ak.vercel.app"),
   title: { default: "evalgate · LLM eval harness", template: "%s · evalgate" },
   description: ONE_LINER,
   openGraph: { title: "evalgate · catch the change that makes your LLM app worse", description: ONE_LINER, type: "website" },
