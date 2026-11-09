@@ -1,7 +1,7 @@
 """
 TARGETS: where the answers come from
 ------------------------------------
-The "target" is the LLM app being tested. evalgate does not care how it is built; it only needs
+The "target" is the LLM app being tested. Evalgate does not care how it is built; it only needs
 a way to get the app's answer for each case:
 
     type: replay     answers already saved in a file (JSONL lines {"id": ..., "output": ...}, or a JSON object id -> output).

@@ -1,4 +1,4 @@
-name: evalgate
+name: Evalgate
 description: Run an LLM eval suite and fail the job if quality dropped compared with a baseline run.
 author: Aditya Khetarpal
 branding:

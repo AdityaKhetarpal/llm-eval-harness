@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { site } from "@/lib/data";
 
-export const alt = "evalgate: catch the change that makes your LLM app worse, before it ships";
+export const alt = "Evalgate: catch the change that makes your LLM app worse, before it ships";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -25,7 +25,7 @@ export default function OpengraphImage() {
               <circle cx="22" cy="23.5" r="4.5" fill="#ff5a5f" />
             </svg>
           </div>
-          <div style={{ fontSize: 40, fontWeight: 600 }}>evalgate</div>
+          <div style={{ fontSize: 40, fontWeight: 600 }}>Evalgate</div>
           <div style={{ fontSize: 26, color: "#646b76", marginLeft: 8 }}>open-source LLM eval harness</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>

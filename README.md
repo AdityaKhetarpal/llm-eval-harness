@@ -1,8 +1,8 @@
-# evalgate: LLM eval harness
+# Evalgate: LLM eval harness
 
 **Catch the change that makes your LLM app worse, before it ships.**
 
-evalgate runs your AI app on a fixed set of questions, scores every answer, compares the result with what is live
+Evalgate runs your AI app on a fixed set of questions, scores every answer, compares the result with what is live
 today, and **fails the build** if anything got worse. It also measures whether an AI judge grades the way people do,
 so you know which scores to trust.
 
@@ -15,7 +15,7 @@ so you know which scores to trust.
 ## Why
 
 Changing a prompt, a model or a retrieval setting is easy. Knowing whether it made things better is not. Teams look at a
-handful of answers, it "seems fine", and it ships. evalgate turns that into a number and a rule:
+handful of answers, it "seems fine", and it ships. Evalgate turns that into a number and a rule:
 
 1. **A suite**: questions, expected answers and checks, in one YAML file.
 2. **A run**: every answer scored, saved as JSON.
@@ -40,7 +40,7 @@ in six groups:
 
 Then the bot was changed the way real teams change bots, one thing at a time. Every version answered all 44 messages
 with a free Qwen model on a GitHub Actions runner ([generate.yml](.github/workflows/generate.yml), greedy decoding,
-answers saved in [examples/support_bot/runs](examples/support_bot/runs)), and evalgate checked every answer.
+answers saved in [examples/support_bot/runs](examples/support_bot/runs)), and Evalgate checked every answer.
 
 | Version | What changed | Pass rate | Broke | Fixed | Time / answer | Gate |
 |---|---|---|---|---|---|---|

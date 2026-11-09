@@ -50,7 +50,7 @@ def compare_markdown(result: dict, max_rows: int = 15) -> str:
     b, c = result["baseline"], result["candidate"]
     icon = "✅" if ok else "❌"
     lines = [
-        f"## {icon} evalgate: {result['verdict']} ({result['suite']})",
+        f"## {icon} Evalgate: {result['verdict']} ({result['suite']})",
         "",
         "| | Baseline | Candidate | Change |",
         "|---|---|---|---|",

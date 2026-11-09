@@ -9,7 +9,7 @@ type Step = { el?: string; title: string; text: string };
 
 const TOURS: Record<string, Step[]> = {
   "/": [
-    { title: "What is evalgate?", text: "An exam for AI apps. Every time someone changes a prompt or a model, the app answers the same fixed questions, each answer is checked automatically, and the change is blocked if anything got worse." },
+    { title: "What is Evalgate?", text: "An exam for AI apps. Every time someone changes a prompt or a model, the app answers the same fixed questions, each answer is checked automatically, and the change is blocked if anything got worse." },
     { el: ".gate-panel", title: "The idea in one picture", text: "Each square is one customer message. This is the riskiest real change: red squares are answers that were right before and broke, so the gate fails." },
     { el: "dl.facts", title: "The numbers", text: "The demo exam, how many changes the gate blocked, and how well a free AI judge agrees with people." },
     { el: "ul.skills", title: "The demo exam", text: "A support chatbot for Voltkart, a made-up store. 44 customer messages test six skills, from policy facts to prompt-injection attacks." },
@@ -48,7 +48,7 @@ const TOURS: Record<string, Step[]> = {
     { el: ".card[aria-live]", title: "The result", text: "Pass or fail, and the exact lines to put the same check in your own exam file." },
   ],
   "/docs": [
-    { el: ".page-head", title: "Get started", text: "Everything you need to add evalgate to your own project." },
+    { el: ".page-head", title: "Get started", text: "Everything you need to add Evalgate to your own project." },
     { el: ".code", title: "Three commands", text: "Install it, create an example exam, and run it. The example has one wrong answer on purpose so you see a failure." },
     { el: ".table-wrap", title: "All 12 checks", text: "From exact text to JSON, numbers, SQL results and an AI judge." },
   ],

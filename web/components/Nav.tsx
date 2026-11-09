@@ -18,9 +18,9 @@ export default function Nav() {
   return (
     <nav className="nav">
       <div className="wrap nav-inner">
-        <Link href="/" className="brand" aria-label="evalgate home">
+        <Link href="/" className="brand" aria-label="Evalgate home">
           <Mark />
-          <span>evalgate</span>
+          <span>Evalgate</span>
         </Link>
         <div className="nav-links" aria-label="Pages">
           {LINKS.map((l) => (

@@ -14,10 +14,10 @@ const ONE_LINER =
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://evalgate-ak.vercel.app"),
-  title: { default: "evalgate · LLM eval harness", template: "%s · evalgate" },
+  title: { default: "Evalgate · LLM eval harness", template: "%s · Evalgate" },
   description: ONE_LINER,
-  openGraph: { title: "evalgate · catch the change that makes your LLM app worse", description: ONE_LINER, type: "website" },
-  twitter: { card: "summary_large_image", title: "evalgate · LLM eval harness", description: ONE_LINER },
+  openGraph: { title: "Evalgate · catch the change that makes your LLM app worse", description: ONE_LINER, type: "website" },
+  twitter: { card: "summary_large_image", title: "Evalgate · LLM eval harness", description: ONE_LINER },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer>
           <div className="wrap row">
             <span>
-              evalgate {site.version} · built by{" "}
+              Evalgate {site.version} · built by{" "}
               <a href="https://www.linkedin.com/in/adityakhetarpal" target="_blank" rel="noreferrer">Aditya Khetarpal</a>
             </span>
             <span>

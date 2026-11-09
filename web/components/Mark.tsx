@@ -1,4 +1,4 @@
-// The evalgate logo: a barrier gate. The arm is down and a red answer is held back,
+// The Evalgate logo: a barrier gate. The arm is down and a red answer is held back,
 // which is what the gate does to a change that makes the app worse.
 // Shapes only, so it needs no font. Colours come from globals.css.
 export default function Mark({ className = "brand-mark" }: { className?: string }) {

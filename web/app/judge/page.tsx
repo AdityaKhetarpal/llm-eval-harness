@@ -93,7 +93,7 @@ export default function JudgePage() {
         <h1>Can you trust an AI judge?</h1>
         <p>
           Many teams grade LLM answers with another LLM. That judge is a measuring instrument, and an instrument has to be
-          checked against a known standard first. evalgate lets the judge grade answers whose correct grade is already known,
+          checked against a known standard first. Evalgate lets the judge grade answers whose correct grade is already known,
           and reports how often it agrees, corrected for luck.
         </p>
       </div>

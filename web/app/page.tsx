@@ -46,7 +46,7 @@ export default function Home() {
           <p className="eyebrow">Open-source LLM eval harness for Python and GitHub Actions</p>
           <h1>Catch the change that makes your LLM app worse, before it ships.</h1>
           <p className="lede">
-            evalgate gives your AI app the same exam after every change. Each answer is checked automatically and the score is
+            Evalgate gives your AI app the same exam after every change. Each answer is checked automatically and the score is
             compared with the version that is live. If anything got worse, the build fails and the change can&apos;t ship.
           </p>
           <div className="buttons">
@@ -110,7 +110,7 @@ export default function Home() {
             Voltkart is a made-up online electronics store. Its chatbot answers customers from a one-page{" "}
             <Link href="/bot">store policy</Link>. The exam has {site.suite.cases} customer messages. Then the bot is changed
             the way real teams change bots: a friendlier prompt, a cheaper model, one extra rule. Every version answered all{" "}
-            {site.suite.cases} messages with a free Qwen model on GitHub&apos;s servers, and evalgate checked every answer.
+            {site.suite.cases} messages with a free Qwen model on GitHub&apos;s servers, and Evalgate checked every answer.
           </p>
         </div>
         <ul className="skills">

@@ -1,4 +1,4 @@
-"""evalgate: test any LLM app against a fixed question set, block regressions in CI,
+"""Evalgate: test any LLM app against a fixed question set, block regressions in CI,
 and check that your AI judge agrees with humans.
 
 The pieces, in the order they are used:

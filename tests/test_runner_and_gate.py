@@ -108,7 +108,7 @@ def test_reports_render():
     page = run_html(run)
     assert page.startswith("<!doctype html>") and "</script>" in page
     b, a = runs({"1": True}, {"1": False})
-    assert "❌ evalgate: FAIL" in compare_markdown(compare_runs(b, a))
+    assert "❌ Evalgate: FAIL" in compare_markdown(compare_runs(b, a))
 
 
 def test_load_suite_from_file(tmp_path):

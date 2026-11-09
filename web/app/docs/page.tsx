@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Code from "@/components/Code";
 import { REPO } from "@/lib/data";
 
-export const metadata: Metadata = { title: "Docs", description: "Install evalgate, write a suite, gate it in CI and calibrate an AI judge." };
+export const metadata: Metadata = { title: "Docs", description: "Install Evalgate, write a suite, gate it in CI and calibrate an AI judge." };
 
 const CHECKS: [string, string, string][] = [
   ["exact", "Answer equals expected (case and spaces ignored). A list means any of them.", "ignore_case, ignore_punctuation"],
@@ -25,7 +25,7 @@ export default function DocsPage() {
       <div className="page-head">
         <div className="eyebrow">Docs</div>
         <h1>Get started</h1>
-        <p>evalgate is a small Python package (one dependency: PyYAML) with a command-line tool and a GitHub Action.</p>
+        <p>Evalgate is a small Python package (one dependency: PyYAML) with a command-line tool and a GitHub Action.</p>
       </div>
       <div className="prose">
         <h2>1. Install and make a first suite</h2>

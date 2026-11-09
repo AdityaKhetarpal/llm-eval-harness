@@ -1,4 +1,4 @@
-// The rule-based evalgate checks, ported from evalgate/checks.py so the playground runs in the browser.
+// The rule-based Evalgate checks, ported from evalgate/checks.py so the playground runs in the browser.
 // lib/checks.test.ts runs the same cases as tests/test_checks.py to keep the two in step.
 
 export type CheckResult = { passed: boolean; score: number; detail: string };

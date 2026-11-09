@@ -4,7 +4,7 @@ import Code from "@/components/Code";
 import GateView from "@/components/GateView";
 import { pct, site, worstChange } from "@/lib/data";
 
-export const metadata: Metadata = { title: "The gate", description: "Three real changes to a support chatbot and what the evalgate gate decided." };
+export const metadata: Metadata = { title: "The gate", description: "Three real changes to a support chatbot and what the Evalgate gate decided." };
 
 export default function GatePage() {
   const worst = worstChange();
@@ -37,7 +37,7 @@ export default function GatePage() {
         <Code>{`
 $ evalgate gate examples/support_bot/suite.yaml --baseline baselines/support-bot.json \\
     --outputs examples/support_bot/runs/${worst?.kind ?? "v2-3b"}.jsonl
-## ${worst?.verdict === "PASS" ? "✅" : "❌"} evalgate: ${worst?.verdict ?? "FAIL"} (support-bot)
+## ${worst?.verdict === "PASS" ? "✅" : "❌"} Evalgate: ${worst?.verdict ?? "FAIL"} (support-bot)
 ${(worst?.reasons ?? []).map((r) => `- ${r}`).join("\n")}
 $ echo $?
 ${worst?.verdict === "PASS" ? 0 : 1}
