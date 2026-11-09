@@ -56,10 +56,24 @@ const TOURS: Record<string, Step[]> = {
 
 const SEEN_KEY = "evalgate-tour-seen";
 
-function scrollToY(y: number) {
-  const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, o?: object) => void } }).__lenis;
-  if (lenis) lenis.scrollTo(y, { duration: 0.6 });
-  else window.scrollTo({ top: y, behavior: "smooth" });
+type Lenis = { scrollTo: (y: number, o?: { duration?: number; onComplete?: () => void }) => void };
+
+// Scroll the page to y and call done once it has stopped (Lenis when it's running, otherwise the browser).
+function scrollToY(y: number, done: () => void) {
+  let called = false;
+  const finish = () => {
+    if (called) return;
+    called = true;
+    done();
+  };
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const lenis = (window as unknown as { __lenis?: Lenis }).__lenis;
+  if (lenis && !calm) lenis.scrollTo(y, { duration: 0.7, onComplete: finish });
+  else {
+    window.addEventListener("scrollend", finish, { once: true });
+    window.scrollTo({ top: y, behavior: calm ? "auto" : "smooth" });
+  }
+  setTimeout(finish, 900); // in case no end event comes
 }
 
 export default function Tour() {
@@ -68,22 +82,37 @@ export default function Tour() {
   const [steps, setSteps] = useState<Step[]>([]);
   const [at, setAt] = useState(-1);
   const [hint, setHint] = useState(false);
-  const [box, setBox] = useState<{ ring: React.CSSProperties; card: React.CSSProperties }>({ ring: {}, card: {} });
+  // where the highlight and the note sit; the note is hidden while the page scrolls to the next step
+  const [ring, setRing] = useState<React.CSSProperties | null>(null);
+  const [card, setCard] = useState<React.CSSProperties>({});
+  const [shown, setShown] = useState(false);
+  const [view, setView] = useState(0); // the step the note is showing; it changes only while the note is hidden
+  const [glide, setGlide] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const open = at >= 0;
 
   const close = useCallback(() => {
     setAt(-1);
     setHint(false);
+    setShown(false);
+    setRing(null);
     try {
       localStorage.setItem(SEEN_KEY, "1");
     } catch {}
+  }, []);
+
+  // move to another step: the note hides first, the effect below brings it back at the new spot
+  const go = useCallback((i: number) => {
+    setShown(false);
+    setAt(i);
   }, []);
 
   const start = useCallback(() => {
     const list = (TOURS[key] ?? []).filter((s) => !s.el || document.querySelector(s.el));
     if (!list.length) return;
     setHint(false);
+    setShown(false);
+    setView(0);
     setSteps(list);
     setAt(0);
   }, [key]);
@@ -115,45 +144,67 @@ export default function Tour() {
     return () => clearTimeout(t);
   }, [path]);
 
+  // measure the step's element and put the highlight on it and the note next to it
   const place = useCallback(() => {
-    if (at < 0 || !steps[at]) return;
     const s = steps[at];
+    if (!s) return;
     const el = s.el ? document.querySelector(s.el) : null;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const cw = Math.min(360, vw - 32);
     const ch = cardRef.current?.offsetHeight ?? 180;
     if (!el) {
-      setBox({ ring: { top: vh / 2, left: vw / 2, width: 0, height: 0 }, card: { top: Math.max(16, vh / 2 - ch / 2), left: (vw - cw) / 2 } });
+      // no element: the highlight shrinks to nothing in the middle (so the whole page is dimmed) and the note sits there
+      setRing({ top: vh / 2, left: vw / 2, width: 0, height: 0 });
+      setCard({ top: Math.max(16, (vh - ch) / 2), left: (vw - cw) / 2 });
       return;
     }
     const r = el.getBoundingClientRect();
     const pad = 8;
-    const below = r.bottom + 16;
-    const above = r.top - 16 - ch;
-    const top = below + ch < vh ? below : above > 8 ? above : Math.max(8, vh - ch - 8);
-    setBox({
-      ring: { top: r.top - pad, left: r.left - pad, width: r.width + pad * 2, height: r.height + pad * 2 },
-      card: { top, left: Math.min(Math.max(16, r.left), vw - cw - 16) },
-    });
+    const below = r.bottom + pad + 12;
+    const above = r.top - pad - 12 - ch;
+    const top = below + ch < vh - 8 ? below : above > 8 ? above : Math.max(8, vh - ch - 8);
+    setRing({ top: r.top - pad, left: r.left - pad, width: r.width + pad * 2, height: r.height + pad * 2 });
+    setCard({ top, left: Math.min(Math.max(16, r.left), vw - cw - 16) });
   }, [at, steps]);
 
-  // bring the step's element into view, then place the spotlight and the note
+  // each step: hide the note, scroll the element into view (the highlight rides along with the page),
+  // then show the note once the page has stopped. One movement per step, nothing chasing anything.
   useEffect(() => {
     if (!open) return;
+    let live = true;
     const s = steps[at];
     const el = s?.el ? document.querySelector(s.el) : null;
+    const reveal = () => {
+      if (!live) return;
+      setView(at); // swap the text while the note is invisible
+      requestAnimationFrame(() => {
+        if (!live) return;
+        setGlide(false);
+        place(); // measured after the new text is in, so the note fits
+        setShown(true);
+        cardRef.current?.querySelector<HTMLButtonElement>("[data-next]")?.focus({ preventScroll: true });
+      });
+    };
+    let needScroll = false;
+    let y = 0;
     if (el) {
       const r = el.getBoundingClientRect();
       const tall = r.height > window.innerHeight * 0.6;
-      if (r.top < 80 || r.bottom > window.innerHeight - 40) scrollToY(window.scrollY + r.top - (tall ? 90 : 120));
+      needScroll = r.top < 80 || r.bottom > window.innerHeight - 40;
+      y = window.scrollY + r.top - (tall ? 90 : 120);
     }
-    const t1 = setTimeout(place, 0);
-    const t2 = setTimeout(place, 650);
-    cardRef.current?.querySelector<HTMLButtonElement>("[data-next]")?.focus({ preventScroll: true });
+    const t = setTimeout(() => {
+      if (!live) return;
+      // same screen: the highlight glides to the new spot. Otherwise it jumps to the element and scrolls in with it.
+      setGlide(!needScroll);
+      place();
+      if (needScroll) scrollToY(y, reveal);
+      else setTimeout(reveal, 220);
+    }, 120);
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
+      live = false;
+      clearTimeout(t);
     };
   }, [open, at, steps, place]);
 
@@ -161,8 +212,11 @@ export default function Tour() {
     if (!open) return;
     const keys = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
-      if (e.key === "ArrowRight") setAt((i) => (i < steps.length - 1 ? i + 1 : (close(), -1)));
-      if (e.key === "ArrowLeft") setAt((i) => Math.max(0, i - 1));
+      if (e.key === "ArrowRight") {
+        if (at < steps.length - 1) go(at + 1);
+        else close();
+      }
+      if (e.key === "ArrowLeft" && at > 0) go(at - 1);
     };
     window.addEventListener("resize", place);
     window.addEventListener("scroll", place, { passive: true });
@@ -172,11 +226,12 @@ export default function Tour() {
       window.removeEventListener("scroll", place);
       window.removeEventListener("keydown", keys);
     };
-  }, [open, steps.length, place, close]);
+  }, [open, at, steps.length, place, close, go]);
 
   if (!TOURS[key]) return null;
   const s = steps[at];
-  const last = at === steps.length - 1;
+  const v = steps[view] ?? s;
+  const last = view === steps.length - 1;
 
   return (
     <>
@@ -195,15 +250,17 @@ export default function Tour() {
       {open && s && (
         <>
           <div className="tour-shade" onClick={close} />
-          <div className="tour-ring" style={box.ring} />
-          <div className="tour-card" ref={cardRef} style={box.card} role="dialog" aria-label="Guided tour">
-            <h3>{s.title}</h3>
-            <p>{s.text}</p>
+          <div className={`tour-ring${glide ? " glide" : ""}${s.el ? "" : " empty"}`} style={ring ?? { top: "50%", left: "50%", width: 0, height: 0 }} />
+          <div className={`tour-card${shown ? " in" : ""}`} ref={cardRef} style={card} role="dialog" aria-label="Guided tour">
+            <button type="button" className="tour-x tour-close" aria-label="Close the tour" onClick={close}>×</button>
+            <h3>{v.title}</h3>
+            <p>{v.text}</p>
             <div className="tour-row">
-              <span>{at + 1} / {steps.length}</span>
-              <button type="button" className="tour-skip" onClick={close}>{last ? "Close" : "Skip"}</button>
-              {at > 0 && <button type="button" className="btn" onClick={() => setAt(at - 1)}>Back</button>}
-              <button type="button" className="btn primary" data-next onClick={() => (last ? close() : setAt(at + 1))}>
+              <span className="tour-dots" aria-label={`Step ${view + 1} of ${steps.length}`}>
+                {steps.map((_, i) => <i key={i} className={i === view ? "on" : ""} />)}
+              </span>
+              {view > 0 && <button type="button" className="btn" onClick={() => go(view - 1)}>Back</button>}
+              <button type="button" className="btn primary" data-next onClick={() => (last ? close() : go(view + 1))}>
                 {last ? "Done" : "Next"}
               </button>
             </div>
