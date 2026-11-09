@@ -1,8 +1,10 @@
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbLd } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { modelName, pct, promptName, site } from "@/lib/data";
 
-export const metadata: Metadata = { title: "The bot", description: "The made-up store policy, the prompts and the four versions of the demo support bot." };
+export const metadata: Metadata = { title: "The bot", description: "The made-up store policy, the prompts and the four versions of the demo support bot.", alternates: { canonical: "/bot" } };
 
 export default function BotPage() {
   return (
@@ -65,6 +67,7 @@ export default function BotPage() {
           </div>
         </div>
       </div>
+      <JsonLd data={breadcrumbLd("The bot", "/bot")} />
     </div>
   );
 }

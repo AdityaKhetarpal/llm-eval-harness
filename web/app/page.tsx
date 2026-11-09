@@ -4,6 +4,41 @@ import PassRateChart from "@/components/PassRateChart";
 import { Verdict } from "@/components/Verdict";
 import GateHero, { type Cell } from "@/components/GateHero";
 import { REPO, calibrationsBySet, kappaWords, modelName, pct, site, worstChange } from "@/lib/data";
+import Faq from "@/components/Faq";
+import JsonLd from "@/components/JsonLd";
+import { evalgateFaq } from "@/lib/faq";
+import { SITE_URL, HUB_URL, PERSON_LD } from "@/lib/seo";
+
+// What Google shows for this page: the title leads with what people search ("LLM eval harness", "regression testing").
+export const metadata = {
+  title: { absolute: "Evalgate: open-source LLM eval harness for regression testing in CI" },
+  alternates: { canonical: "/" },
+};
+
+// This project as structured data: free, open-source developer software by Aditya
+const PAGE_LD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": `${SITE_URL}/#software`,
+  name: "Evalgate",
+  alternateName: "Evalgate LLM eval harness",
+  url: SITE_URL,
+  description:
+    "Open-source LLM eval harness: tests an AI app on a fixed question set after every change, blocks regressions in CI and checks whether an AI judge agrees with human graders.",
+  applicationCategory: "DeveloperApplication",
+  applicationSubCategory: "LLM evaluation",
+  operatingSystem: "Linux, macOS, Windows (Python 3)",
+  softwareVersion: site.version,
+  dateModified: site.generated_at.slice(0, 10),
+  license: "https://opensource.org/licenses/MIT",
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  downloadUrl: REPO,
+  codeRepository: REPO,
+  programmingLanguage: "Python",
+  author: { "@id": PERSON_LD["@id"] },
+  isPartOf: { "@id": `${SITE_URL}/#website` },
+};
 
 export default function Home() {
   const worst = worstChange();
@@ -55,6 +90,10 @@ export default function Home() {
             <Link className="btn" href="/docs">Get started</Link>
             <a className="btn ghost" href={REPO} target="_blank" rel="noreferrer">GitHub</a>
           </div>
+          <p className="byline">
+            By <a href={HUB_URL} rel="author">Aditya Khetarpal</a> · Demo data built{" "}
+            <time dateTime={site.generated_at.slice(0, 10)}>{site.generated_at.slice(0, 10)}</time> · MIT licence
+          </p>
         </div>
         <GateHero
           cells={cells}
@@ -225,6 +264,9 @@ evalgate gate evals/suite.yaml --baseline evals/baseline.json
           </div>
         </div>
       </section>
+
+      <Faq items={evalgateFaq()} title="LLM evals: questions people ask" />
+      <JsonLd data={PAGE_LD} />
     </>
   );
 }

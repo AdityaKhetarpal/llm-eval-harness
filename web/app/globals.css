@@ -355,3 +355,14 @@ footer .row { justify-content: space-between; }
   .tour-ring, .tour-ring.glide, .tour-card, .tour-card.in, .tour-dots i { transition: none; }
   .tour-ring { animation: none; }
 }
+
+/* ---------- byline, FAQ, footer project links, plain lists ---------- */
+.byline { color: var(--muted); font-size: 14px; margin-top: 14px; }
+.byline a { color: var(--ink-2); }
+.faq { display: grid; gap: 20px; }
+.faq-item h3 { font-size: 17px; color: var(--ink); }
+.faq-item p { color: var(--ink-2); margin-top: 6px; max-width: 75ch; }
+.footer-more-wrap { margin-top: 18px; }
+.footer-more-title { font-weight: 600; color: var(--ink-2); }
+.footer-more { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 4px; }
+.list-plain { margin-top: 20px; padding-left: 20px; display: grid; gap: 8px; }

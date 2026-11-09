@@ -1,10 +1,16 @@
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbLd } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Code from "@/components/Code";
 import GateView from "@/components/GateView";
 import { pct, site, worstChange } from "@/lib/data";
 
-export const metadata: Metadata = { title: "The gate", description: "Three real changes to a support chatbot and what the Evalgate gate decided." };
+export const metadata: Metadata = {
+  title: "The gate: three LLM app changes it blocked",
+  description: "Three real changes to a support chatbot (a friendlier prompt, a cheaper model, one extra rule) and why the Evalgate gate blocked each one.",
+  alternates: { canonical: "/gate" },
+};
 
 export default function GatePage() {
   const worst = worstChange();
@@ -43,6 +49,7 @@ $ echo $?
 ${worst?.verdict === "PASS" ? 0 : 1}
 `}</Code>
       </section>
+      <JsonLd data={breadcrumbLd("The gate", "/gate")} />
     </div>
   );
 }

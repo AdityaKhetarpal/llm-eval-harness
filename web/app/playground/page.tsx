@@ -1,7 +1,9 @@
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbLd } from "@/lib/seo";
 import type { Metadata } from "next";
 import Playground from "@/components/Playground";
 
-export const metadata: Metadata = { title: "Playground", description: "Try Evalgate's checks on your own answers, in the browser." };
+export const metadata: Metadata = { title: "Playground", description: "Try Evalgate's checks on your own answers, in the browser.", alternates: { canonical: "/playground" } };
 
 export default function PlaygroundPage() {
   return (
@@ -15,6 +17,7 @@ export default function PlaygroundPage() {
         </p>
       </div>
       <Playground />
+      <JsonLd data={breadcrumbLd("Playground", "/playground")} />
     </div>
   );
 }
