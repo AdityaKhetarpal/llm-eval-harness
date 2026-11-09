@@ -1,9 +1,11 @@
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbLd } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import RunExplorer from "@/components/RunExplorer";
 import { pct, site } from "@/lib/data";
 
-export const metadata: Metadata = { title: "Answers", description: "Every answer from every version of the demo support bot, with each check's result." };
+export const metadata: Metadata = { title: "Answers", description: "Every answer from every version of the demo support bot, with each check's result.", alternates: { canonical: "/runs" } };
 
 export default function RunsPage() {
   return (
@@ -19,6 +21,7 @@ export default function RunsPage() {
         </p>
       </div>
       <RunExplorer runs={site.runs} tags={site.suite.tags} />
+      <JsonLd data={breadcrumbLd("Answers", "/runs")} />
     </div>
   );
 }

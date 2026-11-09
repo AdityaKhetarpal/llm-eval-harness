@@ -1,3 +1,5 @@
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbLd } from "@/lib/seo";
 import type { Metadata } from "next";
 import Code from "@/components/Code";
 import Confusion from "@/components/Confusion";
@@ -6,8 +8,10 @@ import { REPO, calibrationsBySet, kappaWords, modelName, pct } from "@/lib/data"
 import type { Calibration } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Judge check",
-  description: "How often does a small AI judge agree with human graders and with execution results?",
+  title: "Can you trust an LLM-as-a-judge? Judge check",
+  description:
+    "How often does a small AI judge agree with human graders and with execution results? Cohen's kappa, confusion matrices and the answers it got wrong.",
+  alternates: { canonical: "/judge" },
 };
 
 /** The verdict a lazy judge would give every time: whichever is more common in the truth labels. */
@@ -174,6 +178,7 @@ pass_at: 3
 $ evalgate calibrate my_judge.yaml --out judge_report.json
 `}</Code>
       </section>
+      <JsonLd data={breadcrumbLd("Judge check", "/judge")} />
     </div>
   );
 }

@@ -1,8 +1,14 @@
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbLd } from "@/lib/seo";
 import type { Metadata } from "next";
 import Code from "@/components/Code";
 import { REPO } from "@/lib/data";
 
-export const metadata: Metadata = { title: "Docs", description: "Install Evalgate, write a suite, gate it in CI and calibrate an AI judge." };
+export const metadata: Metadata = {
+  title: "Docs: LLM regression testing in GitHub Actions",
+  description: "Install Evalgate, write a YAML test suite for your LLM app, block regressions in GitHub Actions and calibrate an AI judge.",
+  alternates: { canonical: "/docs" },
+};
 
 const CHECKS: [string, string, string][] = [
   ["exact", "Answer equals expected (case and spaces ignored). A list means any of them.", "ignore_case, ignore_punctuation"],
@@ -146,6 +152,7 @@ assert result["verdict"] == "PASS", result["reasons"]
           Source, tests and examples: <a href={REPO} target="_blank" rel="noreferrer">{REPO.replace("https://", "")}</a>
         </p>
       </div>
+      <JsonLd data={breadcrumbLd("Docs", "/docs")} />
     </div>
   );
 }
