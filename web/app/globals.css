@@ -318,3 +318,28 @@ footer .row { justify-content: space-between; }
 .skills { list-style: none; margin: 0 0 18px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; }
 .skills li { display: inline-flex; align-items: center; gap: 8px; }
 .skills .cell { width: 12px; height: 12px; }
+
+
+/* guided tour */
+.tour-fab { position: fixed; right: 18px; bottom: 18px; z-index: 30; display: inline-flex; align-items: center; gap: 8px;
+  font: 500 14px/1 var(--sans); color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong);
+  border-radius: 999px; padding: 10px 14px; cursor: pointer; box-shadow: 0 10px 30px -14px rgba(0,0,0,.35); }
+.tour-fab:hover { border-color: var(--ink); }
+.tour-fab i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.tour-hint { position: fixed; right: 18px; bottom: 70px; z-index: 31; display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 14px; padding: 10px 10px 10px 14px;
+  box-shadow: 0 18px 44px -18px rgba(0,0,0,.4); font-size: 14.5px; max-width: calc(100vw - 36px); }
+.tour-x { background: none; border: 0; color: var(--muted); font-size: 20px; line-height: 1; cursor: pointer; padding: 4px 6px; }
+.tour-shade { position: fixed; inset: 0; z-index: 1000; }
+.tour-ring { position: fixed; z-index: 1001; border-radius: 14px; pointer-events: none;
+  box-shadow: 0 0 0 2px var(--accent), 0 0 0 9999px rgba(10,12,16,.62); transition: all .3s ease; }
+.tour-card { position: fixed; z-index: 1002; width: min(360px, calc(100vw - 32px)); background: var(--surface); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 14px; padding: 16px 16px 12px; box-shadow: 0 24px 60px -20px rgba(0,0,0,.5);
+  transition: top .3s ease, left .3s ease; }
+.tour-card h3 { margin: 0 0 6px; font-size: 17px; }
+.tour-card p { margin: 0 0 14px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+.tour-row { display: flex; align-items: center; gap: 8px; }
+.tour-row span { font: 500 12.5px var(--mono); color: var(--muted); margin-right: auto; }
+.tour-row .btn { padding: 8px 12px; font-size: 14px; }
+.tour-skip { background: none; border: 0; color: var(--muted); font: 14px var(--sans); cursor: pointer; padding: 8px; }
+@media (prefers-reduced-motion: reduce) { .tour-ring, .tour-card { transition: none; } }

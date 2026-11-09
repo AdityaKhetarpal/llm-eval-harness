@@ -51,6 +51,7 @@ export default function Home() {
           </p>
           <div className="buttons">
             <Link className="btn primary" href="/gate">See what the gate caught</Link>
+            <button className="btn" type="button" data-tour-start>Take the tour</button>
             <Link className="btn" href="/docs">Get started</Link>
             <a className="btn ghost" href={REPO} target="_blank" rel="noreferrer">GitHub</a>
           </div>

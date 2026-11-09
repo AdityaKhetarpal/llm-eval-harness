@@ -6,7 +6,7 @@ evalgate runs your AI app on a fixed set of questions, scores every answer, comp
 today, and **fails the build** if anything got worse. It also measures whether an AI judge grades the way people do,
 so you know which scores to trust.
 
-**Live site:** https://evalgate-ak.vercel.app · **Install:** `pip install "git+https://github.com/AdityaKhetarpal/llm-eval-harness"`
+**Live site:** https://evalgate-ak.vercel.app (press **Guide** on any page for a short guided tour) · **Install:** `pip install "git+https://github.com/AdityaKhetarpal/llm-eval-harness"`
 
 [![CI](https://github.com/AdityaKhetarpal/llm-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/AdityaKhetarpal/llm-eval-harness/actions/workflows/ci.yml)
 

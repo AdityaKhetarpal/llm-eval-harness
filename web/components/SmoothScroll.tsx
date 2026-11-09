@@ -9,7 +9,12 @@ export default function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const lenis = new Lenis({ autoRaf: true, anchors: true });
-    return () => lenis.destroy();
+    // the guided tour scrolls through Lenis so the two never fight
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
+    return () => {
+      delete (window as unknown as { __lenis?: Lenis }).__lenis;
+      lenis.destroy();
+    };
   }, []);
   return null;
 }
